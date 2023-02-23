@@ -1,9 +1,9 @@
-import React from "react";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import Recipe from "../components/recipe/Recipe";
-
+import React from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import Recipe from '../components/recipe/Recipe';
+import { axiosInstance } from '../config';
 export default function Search() {
    const [recipes, setRecipes] = useState([]);
    const query = useLocation().search;
@@ -11,7 +11,7 @@ export default function Search() {
 
    useEffect(() => {
       const fetchRecipes = async () => {
-         const res = await axios.get(`/recipes/search${query}`);
+         const res = await axiosInstance.get(`/recipes/search${query}`);
          setRecipes(res.data);
          // console.log(res.data);
       };
