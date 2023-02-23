@@ -8,7 +8,6 @@ import UserProfile from './pages/userProfile/UserProfile';
 import Login from './pages/login/Login';
 import Register from './pages/register/Register';
 import Contact from './pages/contact/Contact';
-import About from './pages/about/About';
 import Footer from './components/footer/Footer';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ContextAPI } from './contextAPI/ContextAPI';
@@ -35,7 +34,7 @@ function App() {
             />
             <Route path="/contact" element={<Contact />} />
             <Route path="/favorites" element={<Favorites />} />
-            {/* <Route path="/about" element={<About />} /> */}
+
             <Route path="/recipes/:recipeId" element={<RecipePage />} />
             <Route path="/search" element={<Search />} />
          </Routes>
