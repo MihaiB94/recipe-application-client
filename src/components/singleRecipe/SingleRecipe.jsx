@@ -22,7 +22,7 @@ export default function SingleRecipe() {
    const [ingredients, setIngredients] = useState([]);
    const [preparation_steps, setPreparation_steps] = useState([]);
    const [updateMode, setUpdateMode] = useState(false);
-   const PF = 'http://localhost:5000/images/';
+   const PF = 'https://recipe-aplication-api.onrender.com/server/images/';
    const [cats, setCats] = useState([]);
    const conditions = ['https://', 'http://', 'data:image/'];
    const [file, setFile] = useState(null);
