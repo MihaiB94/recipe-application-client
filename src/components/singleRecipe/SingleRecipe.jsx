@@ -22,7 +22,7 @@ export default function SingleRecipe() {
    const [ingredients, setIngredients] = useState([]);
    const [preparation_steps, setPreparation_steps] = useState([]);
    const [updateMode, setUpdateMode] = useState(false);
-   const PF = 'https://recipe-aplication-api.onrender.com/server/images/';
+   const PF = 'https://recipe-aplication-api.onrender.com/images/';
    const [cats, setCats] = useState([]);
    const conditions = ['https://', 'http://', 'data:image/'];
    const [file, setFile] = useState(null);
@@ -67,7 +67,7 @@ export default function SingleRecipe() {
 
       try {
          const res = await fetch(
-            `https://delicious-recipes.onrender.com/users/${user._id}/favorites/${recipe._id}`,
+            `https://recipe-aplication-api.onrender.com/${user._id}/favorites/${recipe._id}`,
             {
                method: 'PUT'
             }
@@ -98,7 +98,7 @@ export default function SingleRecipe() {
    //    }
    //    try {
    //       const res = await fetch(
-   //          `http://localhost:3000/users/${user._id}/favorites/${recipe._id}`,
+   //          `https://recipe-aplication-api.onrender.com/users/${user._id}/favorites/${recipe._id}`,
    //          {
    //             method: 'PUT'
    //          }
