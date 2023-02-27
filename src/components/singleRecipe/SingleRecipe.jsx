@@ -22,7 +22,7 @@ export default function SingleRecipe() {
    const [ingredients, setIngredients] = useState([]);
    const [preparation_steps, setPreparation_steps] = useState([]);
    const [updateMode, setUpdateMode] = useState(false);
-   const PF = 'https://recipe-app-api.onrender.com/server/images/';
+   const PF = 'https://recipe-aplication-api.onrender.com/images';
    const [cats, setCats] = useState([]);
    const conditions = ['https://', 'http://', 'data:image/'];
    const [file, setFile] = useState(null);
@@ -44,7 +44,7 @@ export default function SingleRecipe() {
       if (user.favorites.includes(recipe._id)) {
          try {
             const res = await fetch(
-               `https://recipe-app-api.onrender.com/server/users/${user._id}/favorites/${recipe._id}`,
+               `https://recipe-aplication-api.onrender.com/users/${user._id}/favorites/${recipe._id}`,
                {
                   method: 'DELETE'
                }
@@ -67,7 +67,7 @@ export default function SingleRecipe() {
 
       try {
          const res = await fetch(
-            `https://recipe-app-api.onrender.com/server/${user._id}/favorites/${recipe._id}`,
+            `https://recipe-aplication-api.onrender.com/${user._id}/favorites/${recipe._id}`,
             {
                method: 'PUT'
             }
