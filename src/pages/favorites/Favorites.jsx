@@ -10,7 +10,7 @@ const Favorites = () => {
 
    useEffect(() => {
       axiosInstance
-         .get(`https://recipe-app-api.onrender.com/server/users/${user._id}/favorites`)
+         .get(`https://delicious-recipes.onrender.com/users/${user._id}/favorites`)
          .then((res) => setFavorites(res.data))
          .catch((err) => setError(err));
    }, []);
