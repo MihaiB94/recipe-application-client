@@ -339,7 +339,7 @@ export default function SingleRecipe() {
                   {recipe.image_url &&
                      (conditions.some((el) => recipe.image_url.includes(el)) ? (
                         <img
-                           src={recipe.image_url}
+                           src={PF + recipe.image_url}
                            className="single-recipe-img"
                         />
                      ) : (
