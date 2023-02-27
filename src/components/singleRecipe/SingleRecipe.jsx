@@ -68,23 +68,35 @@ export default function SingleRecipe() {
       }
 
       try {
-         const res = await fetch(
-            `https://delicious-recipes.onrender.com/${user._id}/favorites/${recipe._id}`,
-            {
-               method: 'PUT'
-            }
-         );
-         if (!res.ok) {
-            const errorMessage = await res.json();
-            console.error(errorMessage.message);
-            return;
-         }
-         const newUser = await res.json();
-         console.log(newUser);
-         dispatch({
-            type: 'UPDATE_USER',
-            payload: Object.assign({}, user, newUser)
-         });
+  const res = await fetch(`https://delicious-recipes.onrender.com/${user._id}/favorites/${recipe._id}`, {
+  method: 'PUT'
+});
+if (!res.ok) {
+  const errorMessage = await res.json();
+  console.error(errorMessage.message);
+  return;
+}
+
+const text = await res.text();
+if (!text) {
+  console.error('Response is empty!');
+  return;
+}
+
+let newUser;
+try {
+  newUser = JSON.parse(text);
+} catch (error) {
+  console.error('Invalid JSON data!');
+  return;
+}
+
+console.log(newUser);
+dispatch({
+  type: 'UPDATE_USER',
+  payload: Object.assign({}, user, newUser)
+});
+
          console.log(newUser);
       } catch (error) {
          console.error(error);
