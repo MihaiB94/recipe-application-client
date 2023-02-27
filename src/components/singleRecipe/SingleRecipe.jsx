@@ -44,7 +44,7 @@ export default function SingleRecipe() {
       if (user.favorites.includes(recipe._id)) {
          try {
             const res = await fetch(
-               `https://delicious-recipes.onrender.com/users/${user._id}/favorites/${recipe._id}`,
+               `https://recipe-aplication-api.onrender.com/server/users/${user._id}/favorites/${recipe._id}`,
                {
                   method: 'DELETE'
                }
@@ -60,7 +60,7 @@ export default function SingleRecipe() {
                type: 'UPDATE_USER',
                payload: Object.assign({}, user, newUser)
             });
-            console.log(newUser);
+           
          } catch (error) {
             console.error(error);
          }
@@ -97,7 +97,7 @@ dispatch({
   payload: Object.assign({}, user, newUser)
 });
 
-         console.log(newUser);
+        // console.log(newUser);
       } catch (error) {
          console.error(error);
       }
