@@ -44,7 +44,7 @@ export default function SingleRecipe() {
       if (user.favorites.includes(recipe._id)) {
          try {
             const res = await fetch(
-               `https://recipe-aplication-api.onrender.com/server/users/${user._id}/favorites/${recipe._id}`,
+               `https://delicious-recipes.onrender.com/users/${user._id}/favorites/${recipe._id}`,
                {
                   method: 'DELETE'
                }
@@ -67,7 +67,7 @@ export default function SingleRecipe() {
 
       try {
          const res = await fetch(
-            `https://recipe-aplication-api.onrender.com/server/${user._id}/favorites/${recipe._id}`,
+            `https://delicious-recipes.onrender.com/${user._id}/favorites/${recipe._id}`,
             {
                method: 'PUT'
             }
