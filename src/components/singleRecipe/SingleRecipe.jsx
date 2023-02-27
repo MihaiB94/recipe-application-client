@@ -68,7 +68,7 @@ export default function SingleRecipe() {
       }
 
       try {
-  const res = await fetch(`https://delicious-recipes.onrender.com/${user._id}/favorites/${recipe._id}`, {
+  const res = await fetch(`https://delicious-recipes.onrender.com/users/${user._id}/favorites/${recipe._id}`, {
   method: 'PUT'
 });
 if (!res.ok) {
