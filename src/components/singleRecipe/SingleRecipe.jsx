@@ -55,10 +55,12 @@ export default function SingleRecipe() {
                return;
             }
             const newUser = await res.json();
+            console.log(newUser);
             dispatch({
                type: 'UPDATE_USER',
                payload: Object.assign({}, user, newUser)
             });
+            console.log(newUser);
          } catch (error) {
             console.error(error);
          }
@@ -83,6 +85,7 @@ export default function SingleRecipe() {
             type: 'UPDATE_USER',
             payload: Object.assign({}, user, newUser)
          });
+         console.log(newUser);
       } catch (error) {
          console.error(error);
       }
