@@ -3,7 +3,7 @@ import './recipe.css';
 import { Link } from 'react-router-dom';
 
 export default function Recipe({ recipe }) {
-   const PF = 'http://localhost:5000/images/';
+   const PF = 'https://recipe-aplication-api.onrender.com/images/';
    const conditions = ['https://', 'http://', 'data:image/'];
 
    return (
