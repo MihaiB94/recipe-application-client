@@ -78,6 +78,7 @@ export default function SingleRecipe() {
             return;
          }
          const newUser = await res.json();
+         console.log(newUser);
          dispatch({
             type: 'UPDATE_USER',
             payload: Object.assign({}, user, newUser)
