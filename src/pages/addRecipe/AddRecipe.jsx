@@ -21,6 +21,9 @@ export default function AddRecipe() {
    const IngLabel = document.getElementById('ing-label');
    const StepLabel = document.getElementById('step-label');
 
+   const validFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
+   const [error, setError] = useState('');
+
    useEffect(() => {
       const fetchCats = async () => {
          const res = await axiosInstance.get('/categories');
@@ -31,32 +34,44 @@ export default function AddRecipe() {
 
    const handleSubmit = async (e) => {
       e.preventDefault();
-      const newRecipe = {
-         username: user.username,
-         // image_url,
-         title,
-         categories,
-         description,
-         ingredients,
-         preparation_steps,
-         userId: user._id // add the user ID to the recipe object
-      };
 
+      // Create a new FormData object
+      const formData = new FormData();
+      formData.append('username', user.username);
+      formData.append('title', title);
+      formData.append('categories', categories);
+      formData.append('description', description);
+      formData.append('ingredients', JSON.stringify(ingredients));
+      formData.append('preparation_steps', JSON.stringify(preparation_steps));
+      formData.append('userId', user._id);
+
+      // If an image file is selected, append it to the FormData object
       if (file) {
-         const data = new FormData();
-         const filename = Date.now() + file.name;
-         data.append('name', filename);
-         data.append('file', file);
-         newRecipe.image_url = filename;
-         try {
-            await axiosInstance.post('/upload', data);
-         } catch (err) {}
+         const filename = Date.now() + '-' + file.name;
+         formData.append('file', file, filename);
       }
 
+      // Make a POST request to create a new recipe
       try {
-         const res = await axiosInstance.post('/recipes', newRecipe);
-         window.location.replace('/recipes/' + res.data._id);
-      } catch (error) {}
+         const response = await axiosInstance.post('/recipes', formData, {
+            headers: {
+               'Content-Type': 'multipart/form-data'
+            }
+         });
+         window.location.replace('/recipes/' + response.data._id);
+      } catch (error) {
+         console.error(error);
+      }
+   };
+   // images upload
+   const handleUpload = (e) => {
+      setFile(e.target.files[0]);
+      console.log(e.target.files[0]);
+
+      // if (validFileTypes.find((type) => type === file.type)) {
+      //    setError('File must be JPG/JPEG/PNG format');
+      //    return;
+      // }
    };
 
    // Creating dynamically input field or Ingredients
