@@ -22,7 +22,7 @@ export default function SingleRecipe() {
    const [ingredients, setIngredients] = useState([]);
    const [preparation_steps, setPreparation_steps] = useState([]);
    const [updateMode, setUpdateMode] = useState(false);
-   const PF = 'https://recipe-aplication-api.onrender.com/images/';
+
    const [cats, setCats] = useState([]);
    const conditions = ['https://', 'http://', 'data:image/'];
    const [file, setFile] = useState(null);
@@ -247,7 +247,7 @@ export default function SingleRecipe() {
                   <label htmlFor="fileInput">
                      <img
                         className="update-single-recipe-img"
-                        src={PF + image_url}
+                        src={image_url}
                         alt=""
                      />
                   </label>
@@ -340,12 +340,12 @@ export default function SingleRecipe() {
                   {recipe.image_url &&
                      (conditions.some((el) => recipe.image_url.includes(el)) ? (
                         <img
-                           src={PF + recipe.image_url}
+                           src={recipe.image_url}
                            className="single-recipe-img"
                         />
                      ) : (
                         <img
-                           src={PF + recipe.image_url}
+                           src={recipe.image_url}
                            alt=""
                            className="single-recipe-img"
                         />
