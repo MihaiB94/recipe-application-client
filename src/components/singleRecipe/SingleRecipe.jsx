@@ -24,17 +24,7 @@ export default function SingleRecipe() {
    const [updateMode, setUpdateMode] = useState(false);
 
    const [cats, setCats] = useState([]);
-   const conditions = ['https://', 'http://', 'data:image/'];
    const [file, setFile] = useState(null);
-
-   // const [favorites, setFavorites] = useState([]);
-
-   // const addToFavorite = (id) => {
-   //    setFavorites(favorites.recipe._id);
-   //    console.log(id);
-   //    console.log(favorites);
-
-   // console.log(user);
 
    const handleFavorites = async (e) => {
       if (!user) {
@@ -191,38 +181,38 @@ export default function SingleRecipe() {
    const handleUpdate = async (e) => {
       e.preventDefault();
 
-      const newRecipe = {};
+      // Create a new FormData object
+      const formData = new FormData();
+      formData.append('username', user.username);
+      formData.append('title', title);
+      formData.append('categories', categories);
+      formData.append('description', description);
+      formData.append('ingredients', JSON.stringify(ingredients));
+      formData.append('preparation_steps', JSON.stringify(preparation_steps));
+      formData.append('userId', user._id);
 
+      // If an image file is selected, append it to the FormData object
       if (file) {
-         const data = new FormData();
-         const filename = file.name;
-         data.append('name', filename);
-         data.append('file', file);
-         newRecipe.image_url = filename;
-         try {
-            await axiosInstance.post('/upload', data);
-         } catch (err) {}
+         const filename = Date.now() + '-' + file.name;
+         formData.append('file', file, filename);
       }
 
+      // Make a POST request to create a new recipe
       try {
-         if (recipe.userId === user._id) {
-            await axiosInstance.put(`/recipes/${recipe._id}`, {
-               username: user.username,
-               image_url,
-               title,
-               categories,
-               description,
-               ingredients,
-               preparation_steps,
-               userId: user._id
-            });
-            // window.location.reload();
-            setUpdateMode(false);
-         } else {
-            console.log('User is not authorized to edit this recipe');
-         }
+         const response = await axiosInstance.put(
+            `/recipes/${recipe._id}`,
+            formData,
+            {
+               headers: {
+                  'Content-Type': 'multipart/form-data'
+               }
+            }
+         );
+         console.log(response);
+         window.location.replace('/recipes/' + response.data._id);
+         setUpdateMode(false);
       } catch (error) {
-         console.log('Error editing recipe:', error);
+         console.error(error);
       }
    };
 
