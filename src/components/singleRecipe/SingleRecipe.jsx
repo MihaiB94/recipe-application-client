@@ -327,19 +327,13 @@ export default function SingleRecipe() {
          <div className="single-recipe-wrapper">
             <div className="single-recipe-main-wrapper">
                <div className="single-recipe-left-content">
-                  {recipe.image_url &&
-                     (conditions.some((el) => recipe.image_url.includes(el)) ? (
-                        <img
-                           src={recipe.image_url}
-                           className="single-recipe-img"
-                        />
-                     ) : (
-                        <img
-                           src={recipe.image_url}
-                           alt=""
-                           className="single-recipe-img"
-                        />
-                     ))}
+                  {recipe.image_url && (
+                     <img
+                        src={recipe.image_url}
+                        alt=""
+                        className="single-recipe-img"
+                     />
+                  )}
                </div>
 
                <div className="single-recipe-right-content">
