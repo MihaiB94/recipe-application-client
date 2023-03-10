@@ -1,0 +1,10 @@
+.loading-msg {
+   font-family: 'Montserrat', sans-serif;
+   font-size: 1.5rem;
+   text-align: center;
+   margin-bottom: 1rem;
+}
+
+.loading-spinner-container {
+   text-align: center;
+}
