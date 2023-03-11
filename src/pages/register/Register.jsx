@@ -127,9 +127,7 @@ export default function Register() {
                               Login
                            </Link>
                         </div>
-                        {error && (
-                           <p className="register-error">{error.message}</p>
-                        )}
+                        {error && <p className="register-error">{error}</p>}
                      </form>
                   </div>
                </div>
