@@ -32,18 +32,22 @@ export default function AddRecipe() {
       fetchCats();
    }, []);
 
+const token = localStorage.getItem('token'); // retrieve token from local storage
+   const decodedToken = jwt_decode(token); // decode the token
+  
+
    const handleSubmit = async (e) => {
       e.preventDefault();
 
       // Create a new FormData object
       const formData = new FormData();
-      formData.append('username', user.username);
+      formData.append('username', decodedToken.username);
       formData.append('title', title);
       formData.append('categories', categories);
       formData.append('description', description);
       formData.append('ingredients', JSON.stringify(ingredients));
       formData.append('preparation_steps', JSON.stringify(preparation_steps));
-      formData.append('userId', user._id);
+      formData.append('userId', decodedToken.id);
 
       // If an image file is selected, append it to the FormData object
       if (file) {
@@ -51,11 +55,13 @@ export default function AddRecipe() {
          formData.append('file', file, filename);
       }
 
+
       // Make a POST request to create a new recipe
       try {
          const response = await axiosInstance.post('/recipes', formData, {
             headers: {
-               'Content-Type': 'multipart/form-data'
+               'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`
             }
          });
          window.location.replace('/recipes/' + response.data._id);
