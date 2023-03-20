@@ -44,16 +44,6 @@ const LoginReducer = (state, action) => {
             error: false
          };
 
-      // case 'UPDATE_SUCCESS':
-      //    const updatedUser = action.payload;
-      //    const mergedUser = { ...state.user, ...updatedUser };
-      //    localStorage.setItem('user', JSON.stringify(mergedUser));
-      //    return {
-      //       user: mergedUser,
-      //       isFetching: false,
-      //       error: false
-      //    };
-
       case 'UPDATE_FAILURE':
          return {
             user: state.user,
