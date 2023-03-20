@@ -25,14 +25,10 @@ export default function Login() {
          });
          // save JWT token to local storage
          localStorage.setItem('token', res.data.token);
-         console.log(res.data.token);
+         
          dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
       } catch (err) {
          dispatch({ type: 'LOGIN_FAILURE', error: err.response.data });
-         console.log('Error:', err);
-
-         setIsLoading(false); // set loading to false when error occurs
-         console.log(isLoading);
       }
    };
 
