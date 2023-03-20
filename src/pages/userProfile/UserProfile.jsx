@@ -10,22 +10,60 @@ export default function UserSettings() {
    const [email, setEmail] = useState(user.email);
    const [password, setPassword] = useState('');
    const [success, setSuccess] = useState(false);
+   const [showChangePassword, setShowChangePassword] = useState(false);
+   const [oldPassword, setOldPassword] = useState('');
+   const [newPassword, setNewPassword] = useState('');
+   const [confirmPassword, setConfirmPassword] = useState('');
+   const [passwordError, setPasswordError] = useState('');
+   const [passwordMismatch, setPasswordMismatch] = useState(false);
 
+   
+   const token = localStorage.getItem('token');
+   const userId = JSON.parse(atob(token.split('.')[1])).id;
    const handleSubmit = async (e) => {
       e.preventDefault();
       dispatch({ type: 'UPDATE_START' });
+
       const updatedUser = {
-         userId: user._id,
+         userId,
          profilePic,
          username,
          email,
          password
       };
 
-      // updatedUser.profilePic = profilePic;
-
       try {
-         const res = await axiosInstance.put('/users/' + user._id, updatedUser);
+         const res = await axiosInstance.put(`/users/${user.id}`, updatedUser, {
+            headers: {
+               Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+         });
+         setSuccess(true);
+
+         dispatch({ type: 'UPDATE_SUCCESS', payload: res.data });
+      } catch (error) {
+         dispatch({ type: 'UPDATE_FAILURE' });
+      }
+   };
+
+   const handleChangePassword = async (e) => {
+      e.preventDefault();
+      setPasswordError('');
+      if (newPassword !== confirmPassword) {
+         setPasswordError('Passwords do not match.');
+         return;
+      }
+      const updatedUser = {
+         userId: user.id,
+         password: newPassword
+      };
+      try {
+         const res = await axiosInstance.put(`/users/${user.id}`, updatedUser, {
+            headers: {
+               Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+         });
+         setShowChangePassword(false);
          setSuccess(true);
          dispatch({ type: 'UPDATE_SUCCESS', payload: res.data });
       } catch (error) {
@@ -33,7 +71,9 @@ export default function UserSettings() {
       }
    };
 
-   console.log(user);
+   const handleShowChangePassword = () => {
+      setShowChangePassword(true);
+   };
 
    return (
       <div className="user-settings">
@@ -82,11 +122,58 @@ export default function UserSettings() {
                   type="password"
                   onChange={(e) => setPassword(e.target.value)}
                />
+               {passwordMismatch && (
+                  <span className="error-txt">
+                     Current password is incorrect.
+                  </span>
+               )}
+
                <button className="settings-submit" type="submit">
                   Update
                </button>
                {success && <span className="success-txt">Profile Updated</span>}
             </form>
+
+            <button
+               className="settings-password"
+               onClick={handleShowChangePassword}
+            >
+               Change Password
+            </button>
+            {showChangePassword && (
+               <form
+                  className="change-password-form"
+                  onSubmit={handleChangePassword}
+               >
+                  <label>Old Password</label>
+                  <input
+                     required
+                     type="password"
+                     value={oldPassword}
+                     onChange={(e) => setOldPassword(e.target.value)}
+                  />
+                  <label>New Password</label>
+                  <input
+                     required
+                     type="password"
+                     value={newPassword}
+                     onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                  <label>Confirm New Password</label>
+                  <input
+                     required
+                     type="password"
+                     value={confirmPassword}
+                     onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  {passwordError && (
+                     <span className="error-txt">{passwordError}</span>
+                  )}
+                  <button className="settings-submit" type="submit">
+                     Change Password
+                  </button>
+               </form>
+            )}
          </div>
       </div>
    );
