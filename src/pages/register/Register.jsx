@@ -29,7 +29,7 @@ export default function Register() {
          localStorage.setItem('token', res.data.token);
 
          res.data && window.location.replace('/login');
-         console.log(res.data.token);
+        
       } catch (err) {
          if (err.response) {
             setError(err.response.data);
@@ -38,10 +38,6 @@ export default function Register() {
                message: 'An error occurred while registering. Please try again.'
             });
          }
-         console.log('Error:', err);
-
-         setIsLoading(false); // set loading to false when error occurs
-         console.log(isLoading);
       }
    };
 
@@ -127,9 +123,7 @@ export default function Register() {
                               Login
                            </Link>
                         </div>
-                        {error && (
-                           <p className="register-error">{error.message}</p>
-                        )}
+                        {error && <p className="register-error">{error}</p>}
                      </form>
                   </div>
                </div>
