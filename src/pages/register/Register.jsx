@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BeatLoader } from 'react-spinners';
-import { axiosInstance } from '../../config';
+import axiosInstance from '../../config';
 import './register.css';
 import '../../style.css';
 
@@ -29,7 +29,6 @@ export default function Register() {
          localStorage.setItem('token', res.data.token);
 
          res.data && window.location.replace('/login');
-         console.log(res.data.token);
       } catch (err) {
          if (err.response) {
             setError(err.response.data);

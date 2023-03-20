@@ -1,5 +1,5 @@
-import { axiosInstance } from '../../config';
-import React, { Component } from 'react';
+import axiosInstance from '../../config';
+import React, { Component, useReducer } from 'react';
 import { useContext } from 'react';
 import { useState, useEffect } from 'react';
 import { ContextAPI } from '../../contextAPI/ContextAPI';
@@ -31,19 +31,22 @@ export default function AddRecipe() {
       };
       fetchCats();
    }, []);
+   const token = localStorage.getItem('token'); // retrieve token from local storage
+   // const decodedToken = jwt_decode(token); // decode the token
+   // console.log(decodedToken); // print the decoded token
 
    const handleSubmit = async (e) => {
       e.preventDefault();
 
       // Create a new FormData object
       const formData = new FormData();
-      formData.append('username', user.username);
+      formData.append('username', useReducer.username);
       formData.append('title', title);
       formData.append('categories', categories);
       formData.append('description', description);
       formData.append('ingredients', JSON.stringify(ingredients));
       formData.append('preparation_steps', JSON.stringify(preparation_steps));
-      formData.append('userId', user._id);
+      formData.append('userId', user.id);
 
       // If an image file is selected, append it to the FormData object
       if (file) {
@@ -55,7 +58,8 @@ export default function AddRecipe() {
       try {
          const response = await axiosInstance.post('/recipes', formData, {
             headers: {
-               'Content-Type': 'multipart/form-data'
+               'Content-Type': 'multipart/form-data',
+               Authorization: `Bearer ${token}`
             }
          });
          window.location.replace('/recipes/' + response.data._id);

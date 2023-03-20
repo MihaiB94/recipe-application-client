@@ -5,7 +5,7 @@ import Header from '../../components/header/Header';
 import Recipes from '../../components/recipes/Recipes';
 import Categories from '../../components/categories/Categories';
 import './index.css';
-import { axiosInstance } from '../../config';
+import axiosInstance from '../../config';
 import { useLocation } from 'react-router-dom';
 import Pagination from '../../components/pagination/Pagination';
 

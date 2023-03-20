@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Recipe from '../components/recipe/Recipe';
-import { axiosInstance } from '../config';
+import axiosInstance from '../config';
 export default function Search() {
    const [recipes, setRecipes] = useState([]);
    const query = useLocation().search;

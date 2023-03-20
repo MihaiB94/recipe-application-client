@@ -1,6 +1,6 @@
 import React from 'react';
 import './categories.css';
-import { axiosInstance } from '../../config';
+import axiosInstance from '../../config';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';

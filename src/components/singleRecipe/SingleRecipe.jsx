@@ -1,11 +1,11 @@
 import React from 'react';
-import { axiosInstance } from '../../config';
+import axiosInstance from '../../config';
 import { useEffect, useState, useContext } from 'react';
 import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ContextAPI } from '../../contextAPI/ContextAPI';
 import TextareaAutosize from 'react-textarea-autosize';
-
+import jwt_decode from 'jwt-decode';
 import './singlerecipe.css';
 
 export default function SingleRecipe() {
@@ -22,30 +22,39 @@ export default function SingleRecipe() {
    const [ingredients, setIngredients] = useState([]);
    const [preparation_steps, setPreparation_steps] = useState([]);
    const [updateMode, setUpdateMode] = useState(false);
-
+   const PF = 'http://localhost:5000/images/';
    const [cats, setCats] = useState([]);
+   const conditions = ['https://', 'http://', 'data:image/'];
    const [file, setFile] = useState(null);
+   const [favorites, setFavorites] = useState([]);
+   const token = localStorage.getItem('token'); // retrieve token from local storage
 
-   const handleFavorites = async (e) => {
+   const addRecipeToFavorites = async (e) => {
+      e.preventDefault();
+
       if (!user) {
          return;
       }
 
-      if (user.favorites.includes(recipe._id)) {
+      if (!user.favorites.includes(recipe._id)) {
          try {
             const res = await fetch(
-               `https://recipe-aplication-api.onrender.com/server/users/${user._id}/favorites/${recipe._id}`,
+               `https://recipe-aplication-api.onrender.com/server/users/${user.id}/favorites/${recipe._id}`,
                {
-                  method: 'DELETE'
+                  method: 'PUT',
+                  headers: {
+                     'Content-Type': 'application/json',
+                     Authorization: `Bearer ${token}`
+                  }
                }
             );
+            console.log(res);
             if (!res.ok) {
                const errorMessage = await res.json();
                console.error(errorMessage.message);
                return;
             }
             const newUser = await res.json();
-
             dispatch({
                type: 'UPDATE_USER',
                payload: Object.assign({}, user, newUser)
@@ -53,63 +62,44 @@ export default function SingleRecipe() {
          } catch (error) {
             console.error(error);
          }
-         return;
-      }
-
-      try {
-         const res = await fetch(
-            `https://recipe-aplication-api.onrender.com/server/users/${user._id}/favorites/${recipe._id}`,
-            {
-               method: 'PUT'
-            }
-         );
-         if (!res.ok) {
-            const errorMessage = await res.json();
-            console.error(errorMessage.message);
-            return;
-         }
-         const newUser = await res.json();
-         dispatch({
-            type: 'UPDATE_USER',
-            payload: Object.assign({}, user, newUser)
-         });
-      } catch (error) {
-         console.error(error);
       }
    };
 
-   //This only check if the recipeId is not in the favorites array then add it.
-   // const handleClick = async (e) => {
-   //    if (!user) {
-   //       return;
-   //    }
-   //    if (user.favorites.includes(recipe._id)) {
-   //       console.log('Recipe already in favorites');
-   //       return;
-   //    }
-   //    try {
-   //       const res = await fetch(
-   //          `https://recipe-aplication-api.onrender.com/server/users/${user._id}/favorites/${recipe._id}`,
-   //          {
-   //             method: 'PUT'
-   //          }
-   //       );
-   //       if (!res.ok) {
-   //          const errorMessage = await res.json();
-   //          console.error(errorMessage.message);
-   //          return;
-   //       }
-   //       const newUser = await res.json();
-   //       dispatch({
-   //          type: 'UPDATE_USER',
-   //          payload: Object.assign({}, user, newUser)
-   //       });
-   //    } catch (error) {
-   //       console.error(error);
-   //    }
-   // };
+   const removeRecipeFromFavorites = async (e) => {
+      e.preventDefault();
 
-   // };
+      if (!user) {
+         return;
+      }
+
+      if (user.favorites.includes(recipe._id)) {
+         try {
+            const res = await fetch(
+               `https://recipe-aplication-api.onrender.com/server/users/${user.id}/favorites/${recipe._id}`,
+               {
+                  method: 'DELETE',
+                  headers: {
+                     'Content-Type': 'application/json',
+                     Authorization: `Bearer ${token}`
+                  }
+               }
+            );
+            console.log(res);
+            if (!res.ok) {
+               const errorMessage = await res.json();
+               console.error(errorMessage.message);
+               return;
+            }
+            const newUser = await res.json();
+            dispatch({
+               type: 'UPDATE_USER',
+               payload: Object.assign({}, user, newUser)
+            });
+         } catch (error) {
+            console.error(error);
+         }
+      }
+   };
 
    useEffect(() => {
       const fetchRecipe = async () => {
@@ -136,9 +126,12 @@ export default function SingleRecipe() {
    //DELETE A recipe
    const handleDelete = async () => {
       try {
-         if (recipe.userId === user._id) {
+         if (recipe.userId === user.id) {
             await axiosInstance.delete(`/recipes/${recipe._id}`, {
-               data: { userId: user._id }
+               data: { userId: user.id },
+               headers: {
+                  Authorization: `Bearer ${token}`
+               }
             });
             window.location.replace('/');
          } else {
@@ -164,7 +157,7 @@ export default function SingleRecipe() {
    //Handle Edit button
    const handleEdit = async (e) => {
       try {
-         if (recipe.userId === user?._id) {
+         if (recipe.userId === user?.id) {
             setUpdateMode(true);
          } else {
             setUpdateMode(false);
@@ -189,12 +182,14 @@ export default function SingleRecipe() {
       formData.append('description', description);
       formData.append('ingredients', JSON.stringify(ingredients));
       formData.append('preparation_steps', JSON.stringify(preparation_steps));
-      formData.append('userId', user._id);
+      formData.append('userId', user.id);
 
       // If an image file is selected, append it to the FormData object
       if (file) {
          const filename = Date.now() + '-' + file.name;
          formData.append('file', file, filename);
+         console.log('File appended to formData:', file);
+         console.log('formData:', formData);
       }
 
       // Make a POST request to create a new recipe
@@ -204,11 +199,12 @@ export default function SingleRecipe() {
             formData,
             {
                headers: {
-                  'Content-Type': 'multipart/form-data'
+                  'Content-Type': 'multipart/form-data',
+                  Authorization: `Bearer ${token}`
                }
             }
          );
-         console.log(response);
+
          window.location.replace('/recipes/' + response.data._id);
          setUpdateMode(false);
       } catch (error) {
@@ -345,13 +341,13 @@ export default function SingleRecipe() {
                               <div className="single-recipe-favorites">
                                  {user.favorites.includes(recipe._id) ? (
                                     <i
-                                       onClick={handleFavorites}
+                                       onClick={removeRecipeFromFavorites}
                                        className="fa-solid fa-heart"
                                     ></i>
                                  ) : (
                                     <i
                                        className="fa-regular fa-heart"
-                                       onClick={handleFavorites}
+                                       onClick={addRecipeToFavorites}
                                     ></i>
                                  )}
                               </div>
@@ -360,12 +356,12 @@ export default function SingleRecipe() {
                                  <Link className="nav-link link" to="/login">
                                     <i
                                        className="fa-regular fa-heart"
-                                       onClick={handleFavorites}
+                                       onClick={addRecipeToFavorites}
                                     ></i>
                                  </Link>
                               </div>
                            )}
-                           {recipe.userId === user?._id && (
+                           {recipe.userId === user?.id && (
                               <div className="edit-delete-icons">
                                  <div className="single-recipe-edit">
                                     <i
