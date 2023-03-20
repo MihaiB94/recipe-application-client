@@ -22,30 +22,40 @@ export default function SingleRecipe() {
    const [ingredients, setIngredients] = useState([]);
    const [preparation_steps, setPreparation_steps] = useState([]);
    const [updateMode, setUpdateMode] = useState(false);
-
    const [cats, setCats] = useState([]);
+   const conditions = ['https://', 'http://', 'data:image/'];
    const [file, setFile] = useState(null);
+   const [favorites, setFavorites] = useState([]);
 
-   const handleFavorites = async (e) => {
+
+   const token = localStorage.getItem('token'); // retrieve token from local storage
+
+   const addRecipeToFavorites = async (e) => {
+      e.preventDefault();
+
       if (!user) {
          return;
       }
 
-      if (user.favorites.includes(recipe._id)) {
+      if (!user.favorites.includes(recipe._id)) {
          try {
             const res = await fetch(
-               `https://recipe-aplication-api.onrender.com/server/users/${user._id}/favorites/${recipe._id}`,
+               `https://recipe-aplication-api.onrender.com/server/users/${user.id}/favorites/${recipe._id}`,
                {
-                  method: 'DELETE'
+                  method: 'PUT',
+                  headers: {
+                     'Content-Type': 'application/json',
+                     Authorization: `Bearer ${token}`
+                  }
                }
             );
+            console.log(res);
             if (!res.ok) {
                const errorMessage = await res.json();
                console.error(errorMessage.message);
                return;
             }
             const newUser = await res.json();
-
             dispatch({
                type: 'UPDATE_USER',
                payload: Object.assign({}, user, newUser)
@@ -53,63 +63,44 @@ export default function SingleRecipe() {
          } catch (error) {
             console.error(error);
          }
-         return;
-      }
-
-      try {
-         const res = await fetch(
-            `https://recipe-aplication-api.onrender.com/server/users/${user._id}/favorites/${recipe._id}`,
-            {
-               method: 'PUT'
-            }
-         );
-         if (!res.ok) {
-            const errorMessage = await res.json();
-            console.error(errorMessage.message);
-            return;
-         }
-         const newUser = await res.json();
-         dispatch({
-            type: 'UPDATE_USER',
-            payload: Object.assign({}, user, newUser)
-         });
-      } catch (error) {
-         console.error(error);
       }
    };
 
-   //This only check if the recipeId is not in the favorites array then add it.
-   // const handleClick = async (e) => {
-   //    if (!user) {
-   //       return;
-   //    }
-   //    if (user.favorites.includes(recipe._id)) {
-   //       console.log('Recipe already in favorites');
-   //       return;
-   //    }
-   //    try {
-   //       const res = await fetch(
-   //          `https://recipe-aplication-api.onrender.com/server/users/${user._id}/favorites/${recipe._id}`,
-   //          {
-   //             method: 'PUT'
-   //          }
-   //       );
-   //       if (!res.ok) {
-   //          const errorMessage = await res.json();
-   //          console.error(errorMessage.message);
-   //          return;
-   //       }
-   //       const newUser = await res.json();
-   //       dispatch({
-   //          type: 'UPDATE_USER',
-   //          payload: Object.assign({}, user, newUser)
-   //       });
-   //    } catch (error) {
-   //       console.error(error);
-   //    }
-   // };
+   const removeRecipeFromFavorites = async (e) => {
+      e.preventDefault();
 
-   // };
+      if (!user) {
+         return;
+      }
+
+      if (user.favorites.includes(recipe._id)) {
+         try {
+            const res = await fetch(
+               `https://recipe-aplication-api.onrender.com/server/users/${user.id}/favorites/${recipe._id}`,
+               {
+                  method: 'DELETE',
+                  headers: {
+                     'Content-Type': 'application/json',
+                     Authorization: `Bearer ${token}`
+                  }
+               }
+            );
+            console.log(res);
+            if (!res.ok) {
+               const errorMessage = await res.json();
+               console.error(errorMessage.message);
+               return;
+            }
+            const newUser = await res.json();
+            dispatch({
+               type: 'UPDATE_USER',
+               payload: Object.assign({}, user, newUser)
+            });
+         } catch (error) {
+            console.error(error);
+         }
+      }
+   };
 
    useEffect(() => {
       const fetchRecipe = async () => {
@@ -124,6 +115,7 @@ export default function SingleRecipe() {
          setPreparation_steps(res.data.preparation_steps);
          setUpdateMode(res.data.updateMode);
       };
+
       fetchRecipe();
 
       const fetchCats = async () => {
@@ -136,9 +128,12 @@ export default function SingleRecipe() {
    //DELETE A recipe
    const handleDelete = async () => {
       try {
-         if (recipe.userId === user._id) {
+         if (recipe.userId === user.id) {
             await axiosInstance.delete(`/recipes/${recipe._id}`, {
-               data: { userId: user._id }
+               data: { userId: user.id },
+               headers: {
+                  Authorization: `Bearer ${token}`
+               }
             });
             window.location.replace('/');
          } else {
@@ -148,6 +143,8 @@ export default function SingleRecipe() {
          console.log('Error deleting recipe:', error);
       }
    };
+
+   console.log(recipe.userId === user.id);
 
    // Set the changed state when updating ingredient input
    const handleChangeIng = (e, index) => {
@@ -164,7 +161,7 @@ export default function SingleRecipe() {
    //Handle Edit button
    const handleEdit = async (e) => {
       try {
-         if (recipe.userId === user?._id) {
+         if (recipe.userId === user?.id) {
             setUpdateMode(true);
          } else {
             setUpdateMode(false);
@@ -181,38 +178,56 @@ export default function SingleRecipe() {
    const handleUpdate = async (e) => {
       e.preventDefault();
 
-      // Create a new FormData object
-      const formData = new FormData();
-      formData.append('username', user.username);
-      formData.append('title', title);
-      formData.append('categories', categories);
-      formData.append('description', description);
-      formData.append('ingredients', JSON.stringify(ingredients));
-      formData.append('preparation_steps', JSON.stringify(preparation_steps));
-      formData.append('userId', user._id);
+      const newRecipe = {};
 
-      // If an image file is selected, append it to the FormData object
       if (file) {
-         const filename = Date.now() + '-' + file.name;
-         formData.append('file', file, filename);
+         const data = new FormData();
+         const filename = file.name;
+         data.append('name', filename);
+         data.append('file', file);
+         newRecipe.image_url = filename;
+         try {
+            await axiosInstance.post('/upload', data);
+         } catch (err) {}
       }
 
-      // Make a POST request to create a new recipe
       try {
-         const response = await axiosInstance.put(
-            `/recipes/${recipe._id}`,
-            formData,
-            {
-               headers: {
-                  'Content-Type': 'multipart/form-data'
+         if (recipe.userId === user.id) {
+            console.log('PUT request data:', {
+               username: user.username,
+               image_url,
+               title,
+               categories,
+               description,
+               ingredients,
+               preparation_steps,
+               userId: user.id
+            });
+            await axiosInstance.put(
+               `/recipes/${recipe._id}`,
+               {
+                  image_url,
+                  username: user.username,
+                  title,
+                  categories,
+                  description,
+                  ingredients: JSON.stringify(ingredients), // convert to JSON string
+                  preparation_steps: JSON.stringify(preparation_steps), // convert to JSON string
+                  userId: user.id
+               },
+               {
+                  headers: {
+                     Authorization: `Bearer ${token}`
+                  }
                }
-            }
-         );
-         console.log(response);
-         window.location.replace('/recipes/' + response.data._id);
-         setUpdateMode(false);
+            );
+            // window.location.reload();
+            setUpdateMode(false);
+         } else {
+            console.log('User is not authorized to edit this recipe');
+         }
       } catch (error) {
-         console.error(error);
+         console.log('Error editing recipe:', error);
       }
    };
 
@@ -237,7 +252,7 @@ export default function SingleRecipe() {
                   <label htmlFor="fileInput">
                      <img
                         className="update-single-recipe-img"
-                        src={image_url}
+                        src={PF + image_url}
                         alt=""
                      />
                   </label>
@@ -327,13 +342,19 @@ export default function SingleRecipe() {
          <div className="single-recipe-wrapper">
             <div className="single-recipe-main-wrapper">
                <div className="single-recipe-left-content">
-                  {recipe.image_url && (
-                     <img
-                        src={recipe.image_url}
-                        alt=""
-                        className="single-recipe-img"
-                     />
-                  )}
+                  {recipe.image_url &&
+                     (conditions.some((el) => recipe.image_url.includes(el)) ? (
+                        <img
+                           src={recipe.image_url}
+                           className="single-recipe-img"
+                        />
+                     ) : (
+                        <img
+                           src={PF + recipe.image_url}
+                           alt=""
+                           className="single-recipe-img"
+                        />
+                     ))}
                </div>
 
                <div className="single-recipe-right-content">
@@ -345,13 +366,13 @@ export default function SingleRecipe() {
                               <div className="single-recipe-favorites">
                                  {user.favorites.includes(recipe._id) ? (
                                     <i
-                                       onClick={handleFavorites}
+                                       onClick={removeRecipeFromFavorites}
                                        className="fa-solid fa-heart"
                                     ></i>
                                  ) : (
                                     <i
                                        className="fa-regular fa-heart"
-                                       onClick={handleFavorites}
+                                       onClick={addRecipeToFavorites}
                                     ></i>
                                  )}
                               </div>
@@ -360,12 +381,12 @@ export default function SingleRecipe() {
                                  <Link className="nav-link link" to="/login">
                                     <i
                                        className="fa-regular fa-heart"
-                                       onClick={handleFavorites}
+                                       onClick={addRecipeToFavorites}
                                     ></i>
                                  </Link>
                               </div>
                            )}
-                           {recipe.userId === user?._id && (
+                           {recipe.userId === user?.id && (
                               <div className="edit-delete-icons">
                                  <div className="single-recipe-edit">
                                     <i
