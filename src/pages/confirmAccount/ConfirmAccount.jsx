@@ -56,14 +56,15 @@ const VerifyAccount = () => {
                </button>
             )}
 
-            {message === 'Account is already verified' && (
-               <button
-                  className="account-verify-button"
-                  onClick={() => navigate('/login')}
-               >
-                  Go to Login
-               </button>
-            )}
+            {message === 'Account is already verified' ||
+               ('Account confirmed successfully' && (
+                  <button
+                     className="account-verify-button"
+                     onClick={() => navigate('/login')}
+                  >
+                     Go to Login
+                  </button>
+               ))}
          </div>
       </div>
    );
