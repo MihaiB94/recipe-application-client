@@ -5,9 +5,11 @@ import { useState, useEffect } from 'react';
 import { ContextAPI } from '../../contextAPI/ContextAPI';
 import './addRecipe.css';
 import TextareaAutosize from 'react-textarea-autosize';
+import jwt_decode from 'jwt-decode';
+import '../../style.css';
+import { setToken, LogoutUser, checkTokenExpiration } from '../../auth';
 
 export default function AddRecipe() {
-   const [image_url, setImage_url] = useState('');
    const [title, setTitle] = useState('');
    const [categories, setCategories] = useState([]);
 
@@ -25,18 +27,37 @@ export default function AddRecipe() {
    const [error, setError] = useState('');
 
    useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (token) {
+         const decodedToken = jwt_decode(token);
+         const issuedAt = Date.now();
+         const expiresIn = decodedToken.exp - issuedAt / 1000;
+         setToken(token, expiresIn);
+         checkTokenExpiration();
+      }
+
       const fetchCats = async () => {
          const res = await axiosInstance.get('/categories');
          setCats(res.data);
       };
       fetchCats();
    }, []);
-   const token = localStorage.getItem('token'); // retrieve token from local storage
-   // const decodedToken = jwt_decode(token); // decode the token
-   // console.log(decodedToken); // print the decoded token
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+         // Redirect the user to the login page or show an error message
+         return;
+      }
+
+      const decodedToken = jwt_decode(token);
+      if (decodedToken.exp < Date.now() / 1000) {
+         LogoutUser();
+         // Redirect the user to the login page or show an error message
+         return;
+      }
 
       // Create a new FormData object
       const formData = new FormData();
@@ -64,7 +85,9 @@ export default function AddRecipe() {
          });
          window.location.replace('/recipes/' + response.data._id);
       } catch (error) {
-         console.error(error);
+         console.error(error.response.data);
+         const message = error.response.data.message.split(', ');
+         setError(message);
       }
    };
    // images upload
@@ -135,18 +158,6 @@ export default function AddRecipe() {
                   />
                </div>
             </div>
-
-            {/* <div className="add-form-item up-inputs">
-               <input
-                  type="text"
-                  placeholder=" "
-                  className="add-form-input"
-                  autoFocus={true}
-                  onChange={(e) => setImage_url(e.target.value)}
-                  required
-               />
-               <label className="add-form-label">Image URL address:</label>
-            </div> */}
 
             <div className="add-form-item up-inputs">
                <input
@@ -243,6 +254,15 @@ export default function AddRecipe() {
             <button className=" recipeAddBtn addSubmit" type="submit">
                Submit Recipe
             </button>
+            {error && (
+               <ul className="add-form-item error">
+                  {error.map((errorMessage, index) => (
+                     <li key={index} className="common-error-message">
+                        {errorMessage}
+                     </li>
+                  ))}
+               </ul>
+            )}
          </form>
       </div>
    );

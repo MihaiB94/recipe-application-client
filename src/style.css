@@ -8,3 +8,7 @@
 .loading-spinner-container {
    text-align: center;
 }
+
+.common-error-message {
+   color: var(--red-orange-color-wheel);
+}

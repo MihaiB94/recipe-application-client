@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BeatLoader } from 'react-spinners';
+import Cookies from 'js-cookie';
 import axiosInstance from '../../config';
 import './register.css';
 import '../../style.css';
@@ -16,31 +17,46 @@ export default function Register() {
 
    const handleSubmit = async (e) => {
       e.preventDefault();
+
+      // Validate input
+      if (!email || !password || !confirmPassword) {
+         setError('Please fill in all fields.');
+         return;
+      }
+
+      if (password !== confirmPassword) {
+         setError('Passwords do not match.');
+         return;
+      }
+
+      // Clear error message
+      setError('');
       setIsLoading(true); // set loading to true before making the API call
       setError('');
       try {
          const res = await axiosInstance.post('/authentication/register', {
-            username,
-            email,
+            username: username.toLowerCase(), // Convert username to lowercase
+            email: email.toLowerCase(), // Convert email to lowercase
             password,
             confirmPassword
          });
          // save JWT token to local storage
-         localStorage.setItem('token', res.data.token);
+         const token = res.data.token; // Get the token value from the response
+         Cookies.set('token', token, { httpOnly: false, expires: 365 });
+         setIsLoading(false);
+         setError('');
 
-         res.data && window.location.replace('/login');
+         res.data && window.location.replace('/account/status');
       } catch (err) {
          if (err.response) {
-            setError(err.response.data);
+            setError(err.response.data.message); // Update error message to show only the "message" field from the response
          } else {
-            setError({
-               message: 'An error occurred while registering. Please try again.'
-            });
+            setError(
+               error.response?.data?.message ??
+                  'An error occurred while registering. Please try again.'
+            );
          }
-         console.log('Error:', err);
-
-         setIsLoading(false); // set loading to false when error occurs
-         console.log(isLoading);
+         setIsLoading(false); // set loading to false after API call completes
       }
    };
 

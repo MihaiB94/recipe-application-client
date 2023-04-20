@@ -22,12 +22,10 @@ export default function SingleRecipe() {
    const [ingredients, setIngredients] = useState([]);
    const [preparation_steps, setPreparation_steps] = useState([]);
    const [updateMode, setUpdateMode] = useState(false);
-   const PF = 'http://localhost:5000/images/';
    const [cats, setCats] = useState([]);
-   const conditions = ['https://', 'http://', 'data:image/'];
    const [file, setFile] = useState(null);
-   const [favorites, setFavorites] = useState([]);
    const token = localStorage.getItem('token'); // retrieve token from local storage
+   const [errorMessage, setErrorMessage] = useState('');
 
    const addRecipeToFavorites = async (e) => {
       e.preventDefault();
@@ -48,7 +46,6 @@ export default function SingleRecipe() {
                   }
                }
             );
-            console.log(res);
             if (!res.ok) {
                const errorMessage = await res.json();
                console.error(errorMessage.message);
@@ -84,7 +81,7 @@ export default function SingleRecipe() {
                   }
                }
             );
-            console.log(res);
+
             if (!res.ok) {
                const errorMessage = await res.json();
                console.error(errorMessage.message);
@@ -104,7 +101,7 @@ export default function SingleRecipe() {
    useEffect(() => {
       const fetchRecipe = async () => {
          const res = await axiosInstance.get('/recipes/' + singleRecipePath);
-         // console.log(res);
+
          setRecipe(res.data);
          setImage_url(res.data.image_url);
          setTitle(res.data.title);
@@ -135,10 +132,10 @@ export default function SingleRecipe() {
             });
             window.location.replace('/');
          } else {
-            console.log('User is not authorized to delete this recipe');
+            setErrorMessage('User is not authorized to delete this recipe');
          }
       } catch (error) {
-         console.log('Error deleting recipe:', error);
+         setErrorMessage(`Error deleting recipe: ${error.message}`);
       }
    };
 
@@ -156,18 +153,17 @@ export default function SingleRecipe() {
 
    //Handle Edit button
    const handleEdit = async (e) => {
+      e.preventDefault();
       try {
          if (recipe.userId === user?.id) {
             setUpdateMode(true);
          } else {
             setUpdateMode(false);
-            console.log('User is not authorized to edit this recipe');
+            setErrorMessage('User is not authorized to edit this recipe');
          }
       } catch (error) {
-         console.log('Error Editing recipe:', error);
+         setErrorMessage(`Error editing recipe: ${error.message}`);
       }
-
-      e.preventDefault();
    };
 
    //UPDATE RECIPE
@@ -220,6 +216,7 @@ export default function SingleRecipe() {
    return updateMode ? (
       <div className="update-recipe">
          <form className="update-form-wrapper">
+            {errorMessage && <p>{errorMessage}</p>}
             <div className="updateMode-singleRecipe">
                {file && (
                   <img
@@ -322,6 +319,7 @@ export default function SingleRecipe() {
       <div className="single-recipe">
          <div className="single-recipe-wrapper">
             <div className="single-recipe-main-wrapper">
+               {errorMessage && <p>{errorMessage}</p>}
                <div className="single-recipe-left-content">
                   {recipe.image_url && (
                      <img

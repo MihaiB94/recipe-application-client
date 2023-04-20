@@ -2,17 +2,20 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRef, useContext, useState } from 'react';
 import { BeatLoader } from 'react-spinners';
-import './login.css';
-import '../../style.css';
+import { setToken } from '../../auth';
 
 import axiosInstance from '../../config';
 import { ContextAPI } from '../../contextAPI/ContextAPI';
 
+import './login.css';
+import '../../style.css';
+
 export default function Login() {
    const userRef = useRef();
    const passwordRef = useRef();
-   const { dispatch, isFetching, error } = useContext(ContextAPI);
+   const { dispatch, isFetching } = useContext(ContextAPI);
    const [isLoading, setIsLoading] = useState(false);
+   const [error, setError] = useState('');
 
    const submitForm = async (e) => {
       e.preventDefault();
@@ -23,15 +26,15 @@ export default function Login() {
             username: userRef.current.value.trim(),
             password: passwordRef.current.value
          });
-         // save JWT token to local storage
-         localStorage.setItem('token', res.data.token);
-
+         const { token, expiresIn } = res.data;
+         console.log(token);
+         console.log(expiresIn);
+         setToken(token, expiresIn);
          dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
       } catch (err) {
-         dispatch({ type: 'LOGIN_FAILURE', error: err.response.data });
-         console.log('Error:', err);
-
-         setIsLoading(false); // set loading to false when error occurs
+         dispatch({ type: 'LOGIN_FAILURE', error: err.response.data.message });
+         setError(err.response.data.message); // Update error message
+         setIsLoading(false); // set loading to false when API call completes with an error
       }
    };
 
