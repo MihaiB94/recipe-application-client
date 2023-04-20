@@ -42,7 +42,7 @@ export default function Register() {
          });
          // save JWT token to local storage
          const token = res.data.token; // Get the token value from the response
-         Cookies.set('token', token, { httpOnly: false, expires: 365 });
+         Cookies.set('token', token, { httpOnly: false, expires: 1 });
          setIsLoading(false);
          setError('');
 

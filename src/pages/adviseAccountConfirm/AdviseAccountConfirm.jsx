@@ -24,8 +24,7 @@ const RegisterStatus = () => {
             );
          } catch (err) {
             if (
-               err.response &&
-               err.response.status === 400 &&
+               (err.response && err.response.status === 400) ||
                err.response.data.message === 'Account not verified'
             ) {
                setMessage(
