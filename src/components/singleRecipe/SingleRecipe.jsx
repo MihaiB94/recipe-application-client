@@ -184,8 +184,6 @@ export default function SingleRecipe() {
       if (file) {
          const filename = Date.now() + '-' + file.name;
          formData.append('file', file, filename);
-         console.log('File appended to formData:', file);
-         console.log('formData:', formData);
       }
 
       // Make a POST request to create a new recipe
