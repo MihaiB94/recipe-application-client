@@ -24,8 +24,8 @@ export default function SingleRecipe() {
    const [updateMode, setUpdateMode] = useState(false);
    const [cats, setCats] = useState([]);
    const [file, setFile] = useState(null);
-   const accessToken = localStorage.getItem('accessToken'); // retrieve accessToken from local storage
    const [errorMessage, setErrorMessage] = useState('');
+   const accessToken = localStorage.getItem('accessToken'); // retrieve accessToken from local storage
 
    const addRecipeToFavorites = async (e) => {
       e.preventDefault();
@@ -123,19 +123,14 @@ export default function SingleRecipe() {
    //DELETE A recipe
    const handleDelete = async () => {
       try {
-         if (recipe.userId === user.id) {
-            await axiosInstance.delete(`/recipes/${recipe._id}`, {
-               data: { userId: user.id },
-               headers: {
-                  Authorization: `Bearer ${accessToken}`
-               }
-            });
-            window.location.replace('/');
-         } else {
-            setErrorMessage('User is not authorized to delete this recipe');
-         }
+         await axiosInstance.delete(`/recipes/${recipe._id}`, {
+            headers: {
+               Authorization: `Bearer ${accessToken}`
+            }
+         });
+         window.location.replace('/');
       } catch (error) {
-         setErrorMessage(`Error deleting recipe: ${error.message}`);
+         console.log('Error deleting recipe:', error);
       }
    };
 
@@ -155,12 +150,7 @@ export default function SingleRecipe() {
    const handleEdit = async (e) => {
       e.preventDefault();
       try {
-         if (recipe.userId === user?.id) {
-            setUpdateMode(true);
-         } else {
-            setUpdateMode(false);
-            setErrorMessage('User is not authorized to edit this recipe');
-         }
+         setUpdateMode(true);
       } catch (error) {
          setErrorMessage(`Error editing recipe: ${error.message}`);
       }
