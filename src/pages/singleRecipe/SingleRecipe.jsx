@@ -24,7 +24,7 @@ export default function SingleRecipe() {
    const [updateMode, setUpdateMode] = useState(false);
    const [cats, setCats] = useState([]);
    const [file, setFile] = useState(null);
-   const token = localStorage.getItem('token'); // retrieve token from local storage
+   const accessToken = localStorage.getItem('accessToken'); // retrieve accessToken from local storage
    const [errorMessage, setErrorMessage] = useState('');
 
    const addRecipeToFavorites = async (e) => {
@@ -42,7 +42,7 @@ export default function SingleRecipe() {
                   method: 'PUT',
                   headers: {
                      'Content-Type': 'application/json',
-                     Authorization: `Bearer ${token}`
+                     Authorization: `Bearer ${accessToken}`
                   }
                }
             );
@@ -77,7 +77,7 @@ export default function SingleRecipe() {
                   method: 'DELETE',
                   headers: {
                      'Content-Type': 'application/json',
-                     Authorization: `Bearer ${token}`
+                     Authorization: `Bearer ${accessToken}`
                   }
                }
             );
@@ -127,7 +127,7 @@ export default function SingleRecipe() {
             await axiosInstance.delete(`/recipes/${recipe._id}`, {
                data: { userId: user.id },
                headers: {
-                  Authorization: `Bearer ${token}`
+                  Authorization: `Bearer ${accessToken}`
                }
             });
             window.location.replace('/');
@@ -194,7 +194,7 @@ export default function SingleRecipe() {
             {
                headers: {
                   'Content-Type': 'multipart/form-data',
-                  Authorization: `Bearer ${token}`
+                  Authorization: `Bearer ${accessToken}`
                }
             }
          );
@@ -350,14 +350,11 @@ export default function SingleRecipe() {
                            ) : (
                               <div className="single-recipe-favorites">
                                  <Link className="nav-link link" to="/login">
-                                    <i
-                                       className="fa-regular fa-heart"
-                                       onClick={addRecipeToFavorites}
-                                    ></i>
+                                    <i className="fa-regular fa-heart"></i>
                                  </Link>
                               </div>
                            )}
-                           {recipe.userId === user?.id && (
+                           {user?.permissions.includes('admin') && (
                               <div className="edit-delete-icons">
                                  <div className="single-recipe-edit">
                                     <i
@@ -369,6 +366,17 @@ export default function SingleRecipe() {
                                     <i
                                        className="fa-solid fa-trash single-recipe-icon"
                                        onClick={handleDelete}
+                                    ></i>
+                                 </div>
+                              </div>
+                           )}
+
+                           {user?.permissions.includes('chef') && (
+                              <div className="edit-delete-icons">
+                                 <div className="single-recipe-edit">
+                                    <i
+                                       className="fa-solid fa-pen-to-square single-recipe-icon"
+                                       onClick={handleEdit}
                                     ></i>
                                  </div>
                               </div>

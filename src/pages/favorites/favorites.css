@@ -1,0 +1,11 @@
+.favorites-recipes {
+   min-height: calc(100vh - 82px - 117px);
+}
+
+.no-favorites {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   text-align: center;
+   padding-top: 5rem;
+}

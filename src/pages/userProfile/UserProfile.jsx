@@ -17,10 +17,10 @@ export default function UserSettings() {
    const [passwordError, setPasswordError] = useState('');
    const [passwordMismatch, setPasswordMismatch] = useState(false);
 
-   console.log(user.id);
+   console.log(user);
    console.log(localStorage.getItem('token'));
    const token = localStorage.getItem('token');
-   const userId = JSON.parse(atob(token.split('.')[1])).id;
+   const userId = user._id;
    const handleSubmit = async (e) => {
       e.preventDefault();
       dispatch({ type: 'UPDATE_START' });
@@ -34,7 +34,7 @@ export default function UserSettings() {
       };
 
       try {
-         const res = await axiosInstance.put(`/users/${user.id}`, updatedUser, {
+         const res = await axiosInstance.put(`/users/${userId}`, updatedUser, {
             headers: {
                Authorization: `Bearer ${localStorage.getItem('token')}`
             }
@@ -55,11 +55,11 @@ export default function UserSettings() {
          return;
       }
       const updatedUser = {
-         userId: user.id,
+         userId: userId,
          password: newPassword
       };
       try {
-         const res = await axiosInstance.put(`/users/${user.id}`, updatedUser, {
+         const res = await axiosInstance.put(`/users/${userId}`, updatedUser, {
             headers: {
                Authorization: `Bearer ${localStorage.getItem('token')}`
             }
@@ -135,7 +135,7 @@ export default function UserSettings() {
                {success && <span className="success-txt">Profile Updated</span>}
             </form>
 
-            <button
+            {/* <button
                className="settings-password"
                onClick={handleShowChangePassword}
             >
@@ -174,7 +174,7 @@ export default function UserSettings() {
                      Change Password
                   </button>
                </form>
-            )}
+            )} */}
          </div>
       </div>
    );

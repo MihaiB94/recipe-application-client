@@ -1,3 +1,4 @@
+import { useMemo, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import React, { useEffect, useRef } from 'react';
 import './navbar.css';
@@ -6,112 +7,102 @@ import { useContext } from 'react';
 import { ContextAPI } from '../../contextAPI/ContextAPI';
 import { useState } from 'react';
 
-export default function NavBar() {
+export default function NavBar(props) {
    const navigate = useNavigate();
    const { user, dispatch } = useContext(ContextAPI);
    const [q, setQ] = useState('');
-   // const [expanded, setExpanded] = useState(false);
    const inputRef = useRef(null);
    const location = useLocation();
+   const navRef = useRef(null);
 
-   const nav = useRef(null);
-   // const searchIcon = useRef(null);
+   useEffect(
+      (location) => {
+         inputRef.current.value = '';
+         return () => {
+            setQ('');
+         };
+      },
+      [location]
+   );
 
-   // const toggleSearch = () => {
-   //    nav.current.classList.toggle('openSearch');
-   //    nav.current.classList.remove('openNav');
-   //    if (nav.current.classList.contains('openSearch')) {
-   //       return searchIcon.current.classList.replace('uil-search', 'uil-times');
-   //    } else if (searchIcon.current) {
-   //       searchIcon.current.classList.replace('uil-times', 'uil-search');
-   //    }
-   // };
    useEffect(() => {
-      inputRef.current.value = '';
-      return () => {
-         setQ('');
+      // Add event listener to the document to close the navbar when clicking outside of it
+      const handleClickOutside = (event) => {
+         if (navRef.current && !navRef.current.contains(event.target)) {
+            closeNav();
+         }
       };
-   }, [location]);
+      document.addEventListener('click', handleClickOutside);
+      return () => {
+         document.removeEventListener('click', handleClickOutside);
+      };
+   }, []);
 
-   const openNav = () => {
-      nav.current.classList.add('openNav');
-      nav.current.classList.remove('openSearch');
-      // searchIcon.current.classList.replace('uil-times', 'uil-search');
-   };
+   const openNav = useCallback(() => {
+      navRef.current.classList.add('openNav');
+      navRef.current.classList.remove('openSearch');
+   }, []);
 
-   const closeNav = () => {
-      nav.current.classList.remove('openNav');
-   };
+   const closeNav = useCallback(() => {
+      navRef.current.classList.remove('openNav');
+   }, []);
 
-   // Closing search bar when clicking outside the search bar
-   // useEffect(() => {
-   //    const handleClick = (event) => {
-   //       setExpanded(false);
-   //    };
-
-   //    document.addEventListener("click", handleClick);
-
-   //    return () => {
-   //       document.removeEventListener("click", handleClick);
-   //    };
-   // }, []);
-
-   const handleClickClear = () => {
-      // 👇️ clear input value
-      setQ('');
-   };
-
-   const handleLogout = () => {
+   const handleLogout = useCallback(() => {
       dispatch({ type: 'LOGOUT' });
-   };
+   }, [dispatch]);
 
-   // const openSearch = () => {
-   //    document.getElementById('myOverlay').style.display = 'block';
-   // };
-
-   // const closeSearch = () => {
-   //    document.getElementById('myOverlay').style.display = 'none';
-   // };
-
-   const showDialog = () => {
+   const showDialog = useCallback(() => {
       document.getElementById('dialog').classList.add('show');
       const scrollY =
          document.documentElement.style.getPropertyValue('--scroll-y');
       const body = document.body;
       body.style.position = 'fixed';
       body.style.top = `-${scrollY}`;
-   };
+   }, []);
 
-   const closeDialog = () => {
+   const closeDialog = useCallback(() => {
       const body = document.body;
       const scrollY = body.style.top;
       body.style.position = '';
       body.style.top = '';
       window.scrollTo(0, parseInt(scrollY || '0') * -1);
       document.getElementById('dialog').classList.remove('show');
-   };
+   }, []);
 
-   window.addEventListener('scroll', () => {
-      document.documentElement.style.setProperty(
-         '--scroll-y',
-         `${window.scrollY}px`
-      );
-   });
+   const handleSearch = useCallback(() => {
+      navigate(`/search?q=${q}`);
+      setQ('');
+      closeDialog();
+   }, [q, navigate, closeDialog]);
 
-   const input = document.querySelector('input');
-
-   const checkEmptyInput = (e) => {
-      if (input.value.length === 0) {
-         e.stopPropagation();
-         e.preventDefault();
-      } else {
-         navigate(`/search?q=${q}`);
-         setQ('');
-      }
-   };
+   // Memoize the navigation links so that they are not recomputed on every render
+   const navLinks = useMemo(() => {
+      return [
+         {
+            to: '/',
+            label: 'Home'
+         },
+         // {
+         //   to: '/about',
+         //   label: 'About',
+         // },
+         {
+            to: '/contact',
+            label: 'Contact'
+         },
+         {
+            to: '/addRecipe',
+            label: 'Add recipe'
+         },
+         {
+            to: '/favorites',
+            label: 'Favorites'
+         }
+      ];
+   }, []);
 
    return (
-      <nav className="nav" ref={nav}>
+      <nav className="nav" ref={navRef}>
          <div className="nav-container">
             <i className="uil uil-bars navOpenBtn" onClick={openNav}></i>
 
@@ -126,29 +117,13 @@ export default function NavBar() {
                   onClick={closeNav}
                ></i>
 
-               <li className="nav-link" onClick={closeNav}>
-                  <Link to="/" className="navigation-link-a">
-                     Home
-                  </Link>
-               </li>
-               {/* <li className="nav-link" onClick={closeNav}>
-                  <Link to="/about">About</Link>
-               </li> */}
-               <li className="nav-link" onClick={closeNav}>
-                  <Link to="/contact" className="navigation-link-a">
-                     Contact
-                  </Link>
-               </li>
-               <li className="nav-link" onClick={closeNav}>
-                  <Link to="/addRecipe" className="navigation-link-a">
-                     Add recipe
-                  </Link>
-               </li>
-               <li className="nav-link" onClick={closeNav}>
-                  <Link to="/favorites" className="navigation-link-a">
-                     Favorites
-                  </Link>
-               </li>
+               {navLinks.map((link, index) => (
+                  <li className="nav-link" key={index} onClick={closeNav}>
+                     <Link to={link.to} className="navigation-link-a">
+                        {link.label}
+                     </Link>
+                  </li>
+               ))}
 
                <div className="user-icons">
                   {user ? (
@@ -206,9 +181,7 @@ export default function NavBar() {
                      <i
                         className="fa-solid fa-magnifying-glass search-btn-modal"
                         onClick={(e) => {
-                           checkEmptyInput(e);
-
-                           closeDialog();
+                           handleSearch();
                         }}
                         title="Search"
                      ></i>
@@ -227,9 +200,7 @@ export default function NavBar() {
                         onChange={(e) => setQ(e.target.value)}
                         onKeyDown={(e) => {
                            if (e.key === 'Enter') {
-                              navigate(`/search?q=${q}`);
-                              setQ('');
-                              closeDialog();
+                              handleSearch();
                            }
                         }}
                         type="text"
@@ -241,11 +212,6 @@ export default function NavBar() {
                <div className="user-icons">
                   {user ? (
                      <>
-                        {/* <div className="bookmark">
-                           <i className="fa-regular fa-bookmark bookmark-icon-empty user-icon"></i>
-                           <i className="fa-solid fa-bookmark bookmark-icon-full user-icon"></i>
-                        </div> */}
-
                         <Link to="/userProfile">
                            <img
                               className="profile-pic"

@@ -5,9 +5,8 @@ import { useState, useEffect } from 'react';
 import { ContextAPI } from '../../contextAPI/ContextAPI';
 import './addRecipe.css';
 import TextareaAutosize from 'react-textarea-autosize';
-import jwt_decode from 'jwt-decode';
-import '../../style.css';
-import { setToken, LogoutUser, checkTokenExpiration } from '../../auth';
+import '../../style/generalStyle.css';
+import { BeatLoader } from 'react-spinners';
 
 export default function AddRecipe() {
    const [title, setTitle] = useState('');
@@ -18,50 +17,36 @@ export default function AddRecipe() {
    const [ingredients, setIngredients] = useState([]);
    const [preparation_steps, setPreparation_steps] = useState([]);
    const [file, setFile] = useState(null);
-   const { user, dispatch } = useContext(ContextAPI);
 
    const IngLabel = document.getElementById('ing-label');
    const StepLabel = document.getElementById('step-label');
 
    const validFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
    const [error, setError] = useState('');
+   const { user, dispatch } = useContext(ContextAPI);
+   const [isLoading, setIsLoading] = useState(true);
+   let accessToken = localStorage.getItem('accessToken');
 
    useEffect(() => {
-      const token = localStorage.getItem('token');
-      if (token) {
-         const decodedToken = jwt_decode(token);
-         const issuedAt = Date.now();
-         const expiresIn = decodedToken.exp - issuedAt / 1000;
-         setToken(token, expiresIn);
-         checkTokenExpiration();
-      }
-
       const fetchCats = async () => {
          const res = await axiosInstance.get('/categories');
          setCats(res.data);
       };
       fetchCats();
    }, []);
-
    const handleSubmit = async (e) => {
       e.preventDefault();
 
-      const token = localStorage.getItem('token');
-      if (!token) {
+      console.log(accessToken);
+      if (!accessToken) {
          // Redirect the user to the login page or show an error message
-         return;
-      }
-
-      const decodedToken = jwt_decode(token);
-      if (decodedToken.exp < Date.now() / 1000) {
-         LogoutUser();
-         // Redirect the user to the login page or show an error message
+         window.location.replace('/login');
          return;
       }
 
       // Create a new FormData object
       const formData = new FormData();
-      formData.append('username', useReducer.username);
+      formData.append('username', user.username);
       formData.append('title', title);
       formData.append('categories', categories);
       formData.append('description', description);
@@ -77,28 +62,20 @@ export default function AddRecipe() {
 
       // Make a POST request to create a new recipe
       try {
+         // checkTokenExpiration();
          const response = await axiosInstance.post('/recipes', formData, {
             headers: {
                'Content-Type': 'multipart/form-data',
-               Authorization: `Bearer ${token}`
+               Authorization: `Bearer ${accessToken}`
             }
          });
+
          window.location.replace('/recipes/' + response.data._id);
       } catch (error) {
          console.error(error.response.data);
          const message = error.response.data.message.split(', ');
          setError(message);
       }
-   };
-   // images upload
-   const handleUpload = (e) => {
-      setFile(e.target.files[0]);
-      console.log(e.target.files[0]);
-
-      // if (validFileTypes.find((type) => type === file.type)) {
-      //    setError('File must be JPG/JPEG/PNG format');
-      //    return;
-      // }
    };
 
    // Creating dynamically input field or Ingredients
@@ -126,12 +103,8 @@ export default function AddRecipe() {
    };
 
    let optionItems = cats.map((cat, index) => (
-      <option key={index}>{cat.category_name}</option>
+      <option key={index}>{cat}</option>
    ));
-   // let options = cats.map((cat) => {
-   //    console.log(cat);
-   //    return cat;
-   // });
 
    return (
       <div className="add-recipe-wrapper">
@@ -153,7 +126,6 @@ export default function AddRecipe() {
                      id="fileInput"
                      onChange={(e) => {
                         setFile(e.target.files[0]);
-                        console.log(e.target.files[0]);
                      }}
                   />
                </div>
@@ -170,8 +142,9 @@ export default function AddRecipe() {
                <label className="add-form-label">Title:</label>
             </div>
 
-            <div id="editor" className="add-form-item ">
+            <div id="editor" className="add-form-item up-inputs ">
                <TextareaAutosize
+                  placeholder=" "
                   className="add-form-input"
                   name="message"
                   minRows={5}
@@ -181,19 +154,24 @@ export default function AddRecipe() {
                <label className="add-form-label">Description:</label>
             </div>
 
-            <div className="add-form-item ">
+            <div className="add-form-item">
                <div className="select-cat">
-                  <select
-                     className="selectOption"
-                     onChange={(e) => setCategories(e.target.value)}
-                     defaultValue="default"
-                  >
-                     <option value="default" disabled hidden>
-                        Select an Option
-                     </option>
-
-                     {optionItems}
-                  </select>
+                  {isLoading ? (
+                     <div className="loading-spinner-container">
+                        <BeatLoader size={13} color={'#000'} />
+                     </div>
+                  ) : (
+                     <select
+                        className="selectOption"
+                        onChange={(e) => setCategories(e.target.value)}
+                        defaultValue="default"
+                     >
+                        <option value="default" disabled hidden>
+                           Select an Option
+                        </option>
+                        {optionItems}
+                     </select>
+                  )}
                </div>
             </div>
 
@@ -206,6 +184,7 @@ export default function AddRecipe() {
                         className="add-form-input ingredient-input"
                         onChange={(e) => handleChangeIng(e, index)}
                         value={ingredient}
+                        required
                      />
                   );
                })}
@@ -228,11 +207,13 @@ export default function AddRecipe() {
                {preparation_steps.map((step, index) => {
                   return (
                      <TextareaAutosize
+                        placeholder=" "
                         key={index}
                         rows={4}
                         className="add-form-input steps-input"
                         onChange={(e) => handleChangeStep(e, index)}
                         value={step}
+                        required
                      />
                   );
                })}
@@ -254,13 +235,18 @@ export default function AddRecipe() {
             <button className=" recipeAddBtn addSubmit" type="submit">
                Submit Recipe
             </button>
+
             {error && (
                <ul className="add-form-item error">
-                  {error.map((errorMessage, index) => (
-                     <li key={index} className="common-error-message">
-                        {errorMessage}
-                     </li>
-                  ))}
+                  {Array.isArray(error) ? (
+                     error.map((errorMessage, index) => (
+                        <li key={index} className="common-error-message">
+                           {errorMessage}
+                        </li>
+                     ))
+                  ) : (
+                     <li className="common-error-message">{error}</li>
+                  )}
                </ul>
             )}
          </form>

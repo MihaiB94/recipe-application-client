@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
-import "./contact.css";
-import emailjs from "emailjs-com";
+import React, { useRef, useState } from 'react';
+import './contact.css';
+import emailjs from 'emailjs-com';
 
 export default function Contact() {
    const form = useRef();
@@ -11,10 +11,10 @@ export default function Contact() {
 
       emailjs
          .sendForm(
-            "gmail_service",
-            "recipe_app_template",
+            'gmail_service',
+            'recipe_app_template',
             form.current,
-            "8W4dWO7EkOvm14McP"
+            '8W4dWO7EkOvm14McP'
          )
          .then(
             (result) => {
@@ -29,6 +29,18 @@ export default function Contact() {
       e.target.reset();
    }
 
+   const openCodepen = () => {
+      window.open('https://codepen.io/mih_ai94');
+   };
+
+   const openLinkedIn = () => {
+      window.open('https://www.linkedin.com/in/mihai-bordeniuc/');
+   };
+
+   const openGithub = () => {
+      window.open('https://github.com/MihaiB94');
+   };
+
    return (
       <div className="contact">
          <div className="contact-box">
@@ -36,24 +48,25 @@ export default function Contact() {
                <h2>CONTACT</h2>
                <div className="links">
                   <div className="contact-link">
-                     <a>
-                        <i className="fa-brands fa-gitlab contact-icon"></i>
-                     </a>
+                     <i
+                        className="fa-brands fa-codepen"
+                        onClick={openCodepen}
+                     ></i>
+                     <p className="social-icon-label">Codepen</p>
                   </div>
                   <div className="contact-link">
-                     <a>
-                        <i className="fa-brands fa-square-facebook contact-icon"></i>
-                     </a>
+                     <i
+                        className="fa-brands fa-linkedin"
+                        onClick={openLinkedIn}
+                     ></i>
+                     <p className="social-icon-label">Linkedin</p>
                   </div>
                   <div className="contact-link">
-                     <a>
-                        <i className="fa-brands fa-twitter contact-icon"></i>
-                     </a>
-                  </div>
-                  <div className="contact-link">
-                     <a>
-                        <i className="fa-brands fa-linkedin contact-icon"></i>
-                     </a>
+                     <i
+                        className="fa-brands fa-github"
+                        onClick={openGithub}
+                     ></i>
+                     <p className="social-icon-label">Github</p>
                   </div>
                </div>
             </div>

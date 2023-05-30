@@ -1,15 +1,10 @@
-* {
-   margin: 0;
-   box-sizing: border-box;
-}
-
 .contact {
    height: 100vh;
    background: #fff; /* fallback for old browsers */
    background: -webkit-linear-gradient(to right, #9a8478cb, #1e130cc4),
-      url("./contactBackground.jpg"); /* Chrome 10-25, Safari 5.1-6 */
+      url('./contactBackground.jpg'); /* Chrome 10-25, Safari 5.1-6 */
    background: linear-gradient(to right, #9a8478cb, #1e130cc4),
-      url("./contactBackground.jpg"); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+      url('./contactBackground.jpg'); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
    color: white;
    overflow: hidden;
    background-size: cover;
@@ -45,7 +40,7 @@
 }
 
 h2 {
-   font-family: "Arimo", sans-serif;
+   font-family: 'Arimo', sans-serif;
    color: #ffffff;
    text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1),
       1px 1px 1px rgba(0, 0, 0, 0.5), 2px 2px 2px rgba(171, 94, 7, 0.05);
@@ -68,6 +63,16 @@ h2 {
    cursor: pointer;
    font-size: 2rem;
    padding: 0.7rem;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+}
+.contact-link .social-icon-label {
+   font-size: 0.85rem;
+   padding-top: 0.2rem;
+   font-weight: 100;
+   font-family: Montserrat;
 }
 
 .contact-link:hover {
@@ -80,7 +85,7 @@ h2 {
 
 .contact-form-input,
 .contact-form-label {
-   font-family: "Poppins", sans-serif;
+   font-family: 'Poppins', sans-serif;
 }
 
 .contact-form-label {
@@ -118,7 +123,7 @@ textarea:valid + label {
    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
       rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
    color: #fff;
-   font-family: "Poppins", sans-serif;
+   font-family: 'Poppins', sans-serif;
    font-size: clamp(1rem, 1.6vw, 1.2rem);
    display: block;
    padding: 12px 40px;

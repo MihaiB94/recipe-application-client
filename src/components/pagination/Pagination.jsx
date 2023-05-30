@@ -34,7 +34,7 @@ const Pagination = ({
                   </button>
                );
             })}
-            <button onClick={nextPage} disabled={currentRecipes.length <= 30}>
+            <button onClick={nextPage} disabled={currentPage === totalPages}>
                Next
             </button>
          </div>{' '}

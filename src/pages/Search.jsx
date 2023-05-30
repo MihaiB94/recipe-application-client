@@ -22,7 +22,7 @@ export default function Search() {
       <div className="recipes">
          <div className="recipes-container">
             {recipes.map((r) => (
-               <Recipe key={recipes.id} recipe={r} />
+               <Recipe key={r.id} recipe={r} />
             ))}
          </div>
       </div>

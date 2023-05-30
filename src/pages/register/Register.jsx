@@ -1,11 +1,14 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BeatLoader } from 'react-spinners';
 import Cookies from 'js-cookie';
 import axiosInstance from '../../config';
+import PasswordStrengthBar from 'react-password-strength-bar';
 import './register.css';
-import '../../style.css';
+import '../../style/generalStyle.css';
+import '../../style/form/generalForm.css';
+import '../../style/form/messageBelowBtn.css';
 
 export default function Register() {
    const [username, setUsername] = useState('');
@@ -15,10 +18,34 @@ export default function Register() {
    const [error, setError] = useState('');
    const [isLoading, setIsLoading] = useState(false);
 
+   const [navbarHeight, setNavbarHeight] = useState(0);
+   const [footerHeight, setFooterHeight] = useState(0);
+   const formHeight = `calc(100vh - ${navbarHeight}px - ${footerHeight}px)`;
+   const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+
+   useEffect(() => {
+      const footer = document.querySelector('.footer');
+      const navbar = document.querySelector('.nav');
+
+      if (navbar) {
+         setNavbarHeight(navbar.offsetHeight);
+      }
+
+      if (footer) {
+         setFooterHeight(footer.offsetHeight);
+      }
+   }, []);
    const handleSubmit = async (e) => {
       e.preventDefault();
 
       // Validate input
+      // Validate input
+      if (!username || !username.trim()) {
+         setError('Please enter a valid username.');
+         return;
+      }
+
       if (!email || !password || !confirmPassword) {
          setError('Please fill in all fields.');
          return;
@@ -26,6 +53,13 @@ export default function Register() {
 
       if (password !== confirmPassword) {
          setError('Passwords do not match.');
+         return;
+      }
+
+      if (!passwordRegex.test(password)) {
+         setError(
+            'Password must contain at least 1 uppercase, 1 lowercase, 1 digit, 1 special character, and be between 8 and 20 characters long.'
+         );
          return;
       }
 
@@ -61,7 +95,7 @@ export default function Register() {
    };
 
    return (
-      <div className="register">
+      <div className="general-form" style={{ height: formHeight }}>
          {isLoading ? (
             <div className="loading-spinner-container">
                <div className="loading-msg">Please Wait!</div>
@@ -70,15 +104,18 @@ export default function Register() {
                </div>
             </div>
          ) : (
-            <div className="register-container">
-               <div className="register-box-wrapper">
+            <div className="general-form-container">
+               <div className="general-form-box-wrapper">
                   <div className="form-header">
-                     <h1>Register Account</h1>
+                     <h1>Sign Up</h1>
                   </div>
                   <div className="login-form-wrapper">
                      <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                           <label className="register-label" htmlFor="username">
+                        <div className="general-form-group">
+                           <label
+                              className="general-form-label"
+                              htmlFor="username"
+                           >
                               Username
                            </label>
                            <input
@@ -90,8 +127,11 @@ export default function Register() {
                            />
                         </div>
 
-                        <div className="form-group">
-                           <label className="register-label" htmlFor="email">
+                        <div className="general-form-group">
+                           <label
+                              className="general-form-label"
+                              htmlFor="email"
+                           >
                               Email Address
                            </label>
                            <input
@@ -103,8 +143,11 @@ export default function Register() {
                            />
                         </div>
 
-                        <div className="form-group">
-                           <label className="register-label" htmlFor="password">
+                        <div className="general-form-group">
+                           <label
+                              className="general-form-label"
+                              htmlFor="password"
+                           >
                               Password
                            </label>
                            <input
@@ -114,9 +157,19 @@ export default function Register() {
                               required="required"
                               onChange={(e) => setPassword(e.target.value)}
                            />
+                           {password && (
+                              <PasswordStrengthBar
+                                 className="passwordStrengthBar"
+                                 password={password}
+                              />
+                           )}
                         </div>
-                        <div className="form-group">
-                           <label htmlFor="confirmPassword">
+
+                        <div className="general-form-group">
+                           <label
+                              htmlFor="confirmPassword"
+                              className="general-form-label"
+                           >
                               Confirm Password
                            </label>
                            <input
@@ -130,21 +183,22 @@ export default function Register() {
                            />
                         </div>
 
-                        <div className="form-group">
-                           <button className="register-btn" type="submit">
+                        <div className="general-form-group">
+                           <button className="general-form-btn" type="submit">
                               Register
                            </button>
                         </div>
 
-                        <div className="acc-register">
+                        <div className="message-under-btn">
                            <p> Already have an account?</p>
-                           <Link className="link register-option" to="/login">
+                           <Link
+                              className="link message-under-btn-link "
+                              to="/login"
+                           >
                               Login
                            </Link>
                         </div>
-                        {error && (
-                           <p className="register-error">{error.message}</p>
-                        )}
+                        {error && <p className="general-form-error">{error}</p>}
                      </form>
                   </div>
                </div>

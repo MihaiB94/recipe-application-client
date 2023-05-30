@@ -109,6 +109,10 @@
 .up-inputs input:focus ~ .add-form-label,
 .up-inputs input:not(:placeholder-shown) ~ .add-form-label,
 .add-form-input:focus + .add-form-label,
+.add-form-input:valid + .add-form-label,
+.up-inputs textarea:focus ~ .add-form-label,
+.up-inputs textarea:not(:placeholder-shown) ~ .add-form-label,
+.add-form-input:focus + .add-form-label,
 .add-form-input:valid + .add-form-label {
    font-size: clamp(0.9rem, 1.3vw, 1rem);
    color: var(--dark-grey);
@@ -161,6 +165,12 @@
    color: var(--tenne-tawny);
 }
 
+/* Error message */
+.add-recipe-wrapper .error-message {
+   color: var(--red-orange-color-wheel);
+   padding-top: 1rem;
+}
+
 @media only screen and (max-width: 650px) {
    .add-form-item {
       position: relative;
@@ -172,4 +182,16 @@
    .select-cat {
       width: auto;
    }
+
+   .addImage {
+      max-width: 300px;
+      height: auto;
+      margin-bottom: 2rem;
+   }
+}
+
+.loading-spinner-container {
+   display: flex;
+   align-items: center;
+   justify-content: center;
 }
