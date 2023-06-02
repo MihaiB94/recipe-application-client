@@ -48,7 +48,7 @@ export default function Login() {
                password: passwordRef.current.value
             },
             {
-               withCredentials: true // Include this option to send cookies with the request
+               credentials: 'include'
             }
          );
 
