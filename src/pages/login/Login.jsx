@@ -37,13 +37,20 @@ export default function Login() {
    const submitForm = async (e) => {
       e.preventDefault();
       dispatch({ type: 'LOGIN_START' });
-      setIsLoading(true); // set loading to true before making the API call
+      setIsLoading(true);
       setError('');
+
       try {
-         const res = await axiosInstance.post('/authentication/login', {
-            username: userRef.current.value.trim().toLowerCase(),
-            password: passwordRef.current.value
-         });
+         const res = await axiosInstance.post(
+            '/authentication/login',
+            {
+               username: userRef.current.value.trim().toLowerCase(),
+               password: passwordRef.current.value
+            },
+            {
+               withCredentials: true // Include this option to send cookies with the request
+            }
+         );
 
          console.log(res.data);
          const { accessToken } = res.data;
@@ -57,8 +64,8 @@ export default function Login() {
          ] = `Bearer ${accessToken}`;
       } catch (err) {
          dispatch({ type: 'LOGIN_FAILURE', error: err.response.data.message });
-         setError(err.response.data.message); // Update error message
-         setIsLoading(false); // set loading to false when API call completes with an error
+         setError(err.response.data.message);
+         setIsLoading(false);
       }
    };
 
