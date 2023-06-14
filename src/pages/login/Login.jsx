@@ -48,7 +48,7 @@ export default function Login() {
                password: passwordRef.current.value
             },
             {
-               credentials: 'include'
+               withCredentials: true
             }
          );
 
