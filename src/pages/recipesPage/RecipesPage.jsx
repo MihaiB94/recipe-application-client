@@ -8,7 +8,7 @@ export default function Index() {
    const recipesPerPageNum = 10;
    const [recipes, setRecipes] = useState([]);
    const [currentPage, setCurrentPage] = useState(1);
-   const [recipesPerPage] = useState(recipesPerPageNum);
+   const [recipesPerPage, setRecipesPerPage] = useState(recipesPerPageNum);
    const { search } = useLocation();
    const [isLoading, setIsLoading] = useState(false);
 
