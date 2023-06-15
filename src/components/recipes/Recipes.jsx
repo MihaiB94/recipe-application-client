@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Recipe from '../recipe/Recipe';
 import { PulseLoader } from 'react-spinners';
 import './recipes.css';
