@@ -1,5 +1,4 @@
 import axiosInstance from '../../config';
-import React, { Component, useReducer } from 'react';
 import { useContext } from 'react';
 import { useState, useEffect } from 'react';
 import { ContextAPI } from '../../contextAPI/ContextAPI';
@@ -21,10 +20,9 @@ export default function AddRecipe() {
    const IngLabel = document.getElementById('ing-label');
    const StepLabel = document.getElementById('step-label');
 
-   const validFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
    const [error, setError] = useState('');
-   const { user, dispatch } = useContext(ContextAPI);
-   const [isLoading, setIsLoading] = useState(true);
+   const { user } = useContext(ContextAPI);
+   const [isLoading] = useState(true);
    let accessToken = localStorage.getItem('accessToken');
 
    useEffect(() => {
@@ -102,8 +100,12 @@ export default function AddRecipe() {
       setPreparation_steps([...preparation_steps]);
    };
 
+   // let optionItems = cats.map((cat, index) => (
+   //    <option key={index}>{cat}</option>
+   // ));
+
    let optionItems = cats.map((cat, index) => (
-      <option key={index}>{cat}</option>
+      <option key={index}>{cat.category_name}</option>
    ));
 
    return (

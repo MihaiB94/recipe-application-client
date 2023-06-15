@@ -5,7 +5,6 @@ import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ContextAPI } from '../../contextAPI/ContextAPI';
 import TextareaAutosize from 'react-textarea-autosize';
-import jwt_decode from 'jwt-decode';
 import './singlerecipe.css';
 
 export default function SingleRecipe() {

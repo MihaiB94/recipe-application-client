@@ -14,7 +14,7 @@ export default function Login() {
    const userRef = useRef();
    const passwordRef = useRef();
    const { dispatch, isFetching } = useContext(ContextAPI);
-   const [isLoading, setIsLoading] = useState(false);
+   const [setIsLoading] = useState(false);
    const [error, setError] = useState('');
 
    const [navbarHeight, setNavbarHeight] = useState(0);
