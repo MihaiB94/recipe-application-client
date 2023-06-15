@@ -3,12 +3,11 @@ import { Link } from 'react-router-dom';
 import axiosInstance from '../../config';
 import { ContextAPI } from '../../contextAPI/ContextAPI';
 import Recipe from '../../components/recipe/Recipe';
-import RecipesPage from '../recipesPage/RecipesPage';
 import './favorites.css';
 const Favorites = () => {
    const [favorites, setFavorites] = useState([]);
    const [error, setError] = useState(null);
-   const { user, dispatch } = useContext(ContextAPI);
+   const { user } = useContext(ContextAPI);
 
    useEffect(() => {
       if (user && user.id) {

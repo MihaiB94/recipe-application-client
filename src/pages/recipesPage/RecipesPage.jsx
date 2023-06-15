@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { BeatLoader } from 'react-spinners';
 import Recipes from '../../components/recipes/Recipes';
 import axiosInstance from '../../config';
 import { useLocation } from 'react-router-dom';
@@ -9,7 +8,7 @@ export default function Index() {
    const recipesPerPageNum = 10;
    const [recipes, setRecipes] = useState([]);
    const [currentPage, setCurrentPage] = useState(1);
-   const [recipesPerPage, setRecipesPerPage] = useState(recipesPerPageNum);
+   const [recipesPerPage] = useState(recipesPerPageNum);
    const { search } = useLocation();
    const [isLoading, setIsLoading] = useState(false);
 

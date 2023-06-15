@@ -24,7 +24,7 @@ const VerifyAccount = () => {
       if (!message) {
          verifyAccount();
       }
-   }, []);
+   }, [confirmationToken, message]);
    const handleResendEmail = async () => {
       try {
          const response = await axiosInstance.post(

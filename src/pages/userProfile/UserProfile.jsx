@@ -10,12 +10,11 @@ export default function UserSettings() {
    const [email, setEmail] = useState(user.email);
    const [password, setPassword] = useState('');
    const [success, setSuccess] = useState(false);
-   const [showChangePassword, setShowChangePassword] = useState(false);
-   const [oldPassword, setOldPassword] = useState('');
-   const [newPassword, setNewPassword] = useState('');
-   const [confirmPassword, setConfirmPassword] = useState('');
-   const [passwordError, setPasswordError] = useState('');
-   const [passwordMismatch, setPasswordMismatch] = useState(false);
+   // const [setShowChangePassword] = useState(false);
+   // const [newPassword] = useState('');
+   // const [confirmPassword] = useState('');
+   // const [, setPasswordError] = useState('');
+   const [passwordMismatch] = useState(false);
 
    console.log(user);
    console.log(localStorage.getItem('token'));
@@ -36,7 +35,7 @@ export default function UserSettings() {
       try {
          const res = await axiosInstance.put(`/users/${userId}`, updatedUser, {
             headers: {
-               Authorization: `Bearer ${localStorage.getItem('token')}`
+               Authorization: `Bearer ${token}`
             }
          });
          setSuccess(true);
@@ -47,34 +46,34 @@ export default function UserSettings() {
       }
    };
 
-   const handleChangePassword = async (e) => {
-      e.preventDefault();
-      setPasswordError('');
-      if (newPassword !== confirmPassword) {
-         setPasswordError('Passwords do not match.');
-         return;
-      }
-      const updatedUser = {
-         userId: userId,
-         password: newPassword
-      };
-      try {
-         const res = await axiosInstance.put(`/users/${userId}`, updatedUser, {
-            headers: {
-               Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-         });
-         setShowChangePassword(false);
-         setSuccess(true);
-         dispatch({ type: 'UPDATE_SUCCESS', payload: res.data });
-      } catch (error) {
-         dispatch({ type: 'UPDATE_FAILURE' });
-      }
-   };
+   // const handleChangePassword = async (e) => {
+   //    e.preventDefault();
+   //    setPasswordError('');
+   //    if (newPassword !== confirmPassword) {
+   //       setPasswordError('Passwords do not match.');
+   //       return;
+   //    }
+   //    const updatedUser = {
+   //       userId: userId,
+   //       password: newPassword
+   //    };
+   //    try {
+   //       const res = await axiosInstance.put(`/users/${userId}`, updatedUser, {
+   //          headers: {
+   //             Authorization: `Bearer ${localStorage.getItem('token')}`
+   //          }
+   //       });
+   //       setShowChangePassword(false);
+   //       setSuccess(true);
+   //       dispatch({ type: 'UPDATE_SUCCESS', payload: res.data });
+   //    } catch (error) {
+   //       dispatch({ type: 'UPDATE_FAILURE' });
+   //    }
+   // };
 
-   const handleShowChangePassword = () => {
-      setShowChangePassword(true);
-   };
+   // const handleShowChangePassword = () => {
+   //    setShowChangePassword(true);
+   // };
 
    return (
       <div className="user-settings">

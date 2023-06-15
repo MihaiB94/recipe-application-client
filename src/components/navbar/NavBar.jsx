@@ -25,6 +25,15 @@ export default function NavBar(props) {
       [location]
    );
 
+   const openNav = useCallback(() => {
+      navRef.current.classList.add('openNav');
+      navRef.current.classList.remove('openSearch');
+   }, []);
+
+   const closeNav = useCallback(() => {
+      navRef.current.classList.remove('openNav');
+   }, []);
+
    useEffect(() => {
       // Add event listener to the document to close the navbar when clicking outside of it
       const handleClickOutside = (event) => {
@@ -36,16 +45,7 @@ export default function NavBar(props) {
       return () => {
          document.removeEventListener('click', handleClickOutside);
       };
-   }, []);
-
-   const openNav = useCallback(() => {
-      navRef.current.classList.add('openNav');
-      navRef.current.classList.remove('openSearch');
-   }, []);
-
-   const closeNav = useCallback(() => {
-      navRef.current.classList.remove('openNav');
-   }, []);
+   }, [closeNav]);
 
    const handleLogout = useCallback(() => {
       dispatch({ type: 'LOGOUT' });
