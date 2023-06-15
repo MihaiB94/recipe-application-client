@@ -22,7 +22,7 @@ export default function AddRecipe() {
 
    const [error, setError] = useState('');
    const { user } = useContext(ContextAPI);
-   const [isLoading] = useState(true);
+   const [isLoading, setIsLoading] = useState(true);
    let accessToken = localStorage.getItem('accessToken');
 
    useEffect(() => {
@@ -31,6 +31,7 @@ export default function AddRecipe() {
          setCats(res.data);
       };
       fetchCats();
+      setIsLoading(false);
    }, []);
    const handleSubmit = async (e) => {
       e.preventDefault();
