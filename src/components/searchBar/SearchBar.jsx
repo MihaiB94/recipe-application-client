@@ -32,12 +32,6 @@ const SearchBar = () => {
       closeDialog();
    }, [q, navigate, closeDialog]);
 
-   const handleKeyDown = (e) => {
-      if (e.key === 'Enter') {
-         handleSearch();
-      }
-   };
-
    return (
       <div className="search-input">
          <i
@@ -66,6 +60,7 @@ const SearchBar = () => {
                <input
                   className="search-input-modal"
                   ref={inputRef}
+                  value={q}
                   onChange={(e) => setQ(e.target.value)}
                   onKeyDown={(e) => {
                      if (e.key === 'Enter') {
