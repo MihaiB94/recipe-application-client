@@ -16,7 +16,7 @@ import NoAccess from './components/noAccess/NoAccess';
 import Footer from './components/footer/Footer';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ContextAPI } from './contextAPI/ContextAPI';
-import Search from './pages/Search';
+import Search from './pages/search/Search';
 import './style/colorPalette.css';
 import Favorites from './pages/favorites/Favorites';
 import AdminDashboard from './pages/adminDashboard/usersList';

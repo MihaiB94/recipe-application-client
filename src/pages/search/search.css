@@ -1,0 +1,27 @@
+.search-recipes {
+   min-height: calc(100vh - 82px - 117px);
+}
+
+.recipe-not-found {
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   text-align: center;
+   padding: 5rem 1rem;
+}
+
+.recipe-not-found > div {
+   padding: 1rem;
+   width: 100%;
+}
+
+.recipe-not-found .no-result-found {
+   margin-bottom: 1rem;
+   font-size: 1.3rem;
+}
+
+.recipe-not-found .subtitle {
+   font-size: 1.2rem;
+}

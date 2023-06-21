@@ -9,3 +9,9 @@
    text-align: center;
    padding-top: 5rem;
 }
+
+@media (max-width: 600px) {
+   .no-favorites {
+      flex-direction: column;
+   }
+}

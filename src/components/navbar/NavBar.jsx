@@ -6,24 +6,11 @@ import { ReactComponent as ReactLogo } from './logo.svg';
 import { useContext } from 'react';
 import { ContextAPI } from '../../contextAPI/ContextAPI';
 import { useState } from 'react';
+import SearchBar from '../searchBar/SearchBar';
 
 export default function NavBar(props) {
-   const navigate = useNavigate();
    const { user, dispatch } = useContext(ContextAPI);
-   const [q, setQ] = useState('');
-   const inputRef = useRef(null);
-   const location = useLocation();
    const navRef = useRef(null);
-
-   useEffect(
-      (location) => {
-         inputRef.current.value = '';
-         return () => {
-            setQ('');
-         };
-      },
-      [location]
-   );
 
    const openNav = useCallback(() => {
       navRef.current.classList.add('openNav');
@@ -50,30 +37,6 @@ export default function NavBar(props) {
    const handleLogout = useCallback(() => {
       dispatch({ type: 'LOGOUT' });
    }, [dispatch]);
-
-   const showDialog = useCallback(() => {
-      document.getElementById('dialog').classList.add('show');
-      const scrollY =
-         document.documentElement.style.getPropertyValue('--scroll-y');
-      const body = document.body;
-      body.style.position = 'fixed';
-      body.style.top = `-${scrollY}`;
-   }, []);
-
-   const closeDialog = useCallback(() => {
-      const body = document.body;
-      const scrollY = body.style.top;
-      body.style.position = '';
-      body.style.top = '';
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);
-      document.getElementById('dialog').classList.remove('show');
-   }, []);
-
-   const handleSearch = useCallback(() => {
-      navigate(`/search?q=${q}`);
-      setQ('');
-      closeDialog();
-   }, [q, navigate, closeDialog]);
 
    // Memoize the navigation links so that they are not recomputed on every render
    const navLinks = useMemo(() => {
@@ -167,47 +130,7 @@ export default function NavBar(props) {
             </ul>
 
             <div className="icons">
-               <i
-                  id="show"
-                  className="uil-search search-icon tooltip bottom"
-                  onClick={showDialog}
-               >
-                  {' '}
-                  <span className="tooltip-content">Search</span>
-               </i>
-
-               <div id="dialog">
-                  <div className="search-input-container">
-                     <i
-                        className="fa-solid fa-magnifying-glass search-btn-modal"
-                        onClick={(e) => {
-                           handleSearch();
-                        }}
-                        title="Search"
-                     ></i>
-
-                     <span
-                        className="closebtn"
-                        onClick={closeDialog}
-                        title="Close"
-                     >
-                        x
-                     </span>
-
-                     <input
-                        className="search-input-modal"
-                        ref={inputRef}
-                        onChange={(e) => setQ(e.target.value)}
-                        onKeyDown={(e) => {
-                           if (e.key === 'Enter') {
-                              handleSearch();
-                           }
-                        }}
-                        type="text"
-                        placeholder="Type to Search..."
-                     />
-                  </div>
-               </div>
+               <SearchBar />
 
                <div className="user-icons">
                   {user ? (
