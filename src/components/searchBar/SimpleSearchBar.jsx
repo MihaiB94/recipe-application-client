@@ -37,6 +37,7 @@ const SimpleSearchBar = () => {
          <input
             className="search-input"
             ref={inputRef}
+            value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => {
                if (e.key === 'Enter') {
